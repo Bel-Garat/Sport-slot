@@ -1,0 +1,24 @@
+{
+	"name": "sportslot",
+	"private": true,
+	"workspaces": [
+		"frontend",
+		"gateway",
+		"services/*"
+	],
+	"engines": {
+		"node": ">=22"
+	},
+	"scripts": {
+		"lint": "npm run lint --workspaces --if-present",
+		"test": "npm run test --workspaces --if-present",
+		"build": "npm run build --workspaces --if-present",
+		"dev:frontend": "npm run dev --workspace frontend",
+		"dev:gateway": "npm run dev --workspace gateway"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.39.5",
+		"eslint": "^9.39.5",
+		"globals": "^16.5.0"
+	}
+}

@@ -7,9 +7,12 @@ Do větve `main` je zakázáno pushovat napřímo. Každý úkol ze SprintManu �
 * **Nové funkce:** `feature/<nazev-ukolu>` (např. `feature/zalozeni-sportoviste`)
 * **Opravy chyb:** `bugfix/<nazev-chyby>` (např. `bugfix/oprava-formulare`)
 
-## 2. Zprávy u commitů
-* Pište smysluplné zprávy, co přesně commit dělá (např. "Přidání endpointu pro kurty", "Úprava designu tlačítek").
-* Commity dělejte průběžně po menších logických celcích.
+## Pravidla pro commity
+Každá commit zpráva musí začínat jedním z následujících prefixů podle toho, co přesně mění:
+* **feat:** Přidání nové funkcionality (např. `feat: založení endpointu pro kurty`)
+* **fix:** Oprava chyby (např. `fix: oprava padání vyhledávání`)
+* **refactor:** Úprava struktury kódu bez změny chování (např. `refactor: přepsání komponenty detailu`)
+* **chore:** Pomocné práce, konfigurace, úprava dokumentace (např. `chore: aktualizace README`)
 
 ## 3. Pull Requesty (PR)
 1. Svou hotovou větev pushněte na GitHub.

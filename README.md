@@ -5,7 +5,11 @@
 * Opravy chyb: `bugfix/<nazev-chyby>`
 
 ## Pravidla pro commity
-* Pište stručné zprávy, co přesně commit dělá (např. přidání tabulky sportovišť, úprava designu tlačítek).
+Každá commit zpráva musí začínat jedním z následujících prefixů podle toho, co přesně mění:
+* **feat:** Přidání nové funkcionality (např. `feat: založení endpointu pro kurty`)
+* **fix:** Oprava chyby (např. `fix: oprava padání vyhledávání`)
+* **refactor:** Úprava struktury kódu bez změny chování (např. `refactor: přepsání komponenty detailu`)
+* **chore:** Pomocné práce, konfigurace, úprava dokumentace (např. `chore: aktualizace README`)
 
 ## Jak otevřít Pull Request (PR)
 1. Pushněte svou branch na GitHub.

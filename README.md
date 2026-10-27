@@ -9,7 +9,8 @@ Každá commit zpráva musí začínat jedním z následujících prefixů podle
 * **feat:** Přidání nové funkcionality (např. `feat: založení endpointu pro kurty`)
 * **fix:** Oprava chyby (např. `fix: oprava padání vyhledávání`)
 * **refactor:** Úprava struktury kódu bez změny chování (např. `refactor: přepsání komponenty detailu`)
-* **chore:** Pomocné práce, konfigurace, úprava dokumentace (např. `chore: aktualizace README`)
+* **chore:** Pomocné práce a konfigurace (např. `chore: úprava CI`)
+* **docs:** Úprava dokumentace (např. `docs: doplnění návodu k databázi`)
 
 ## Jak otevřít Pull Request (PR)
 1. Pushněte svou branch na GitHub.
@@ -42,7 +43,7 @@ Proměnné prostředí jsou popsané v `.env.example`.
 ## Kontroly (CI)
 Každý PR do `main` spouští GitHub Actions (`.github/workflows/ci.yml`):
 * název větve `feature/…` nebo `bugfix/…`,
-* commit zprávy s prefixem `feat:`, `fix:`, `refactor:` nebo `chore:`,
+* commit zprávy s prefixem `feat:`, `fix:`, `refactor:`, `chore:` nebo `docs:`,
 * `npm run lint`, `npm test` a `npm run build` ve všech částech.
 
 Stejné kontroly spustíte lokálně příkazy `npm run lint`, `npm test` a `npm run build`.

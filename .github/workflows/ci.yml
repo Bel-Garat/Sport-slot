@@ -30,12 +30,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: "Commit messages start with feat:, fix:, refactor: or chore:"
+      - name: "Commit messages start with feat:, fix:, refactor:, chore: or docs:"
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          invalid=$(git log --no-merges --format='%h %s' "$BASE_SHA..$HEAD_SHA" | grep -Ev '^[0-9a-f]+ (feat|fix|refactor|chore): ' || true)
+          invalid=$(git log --no-merges --format='%h %s' "$BASE_SHA..$HEAD_SHA" | grep -Ev '^[0-9a-f]+ (feat|fix|refactor|chore|docs): ' || true)
           if [[ -n "$invalid" ]]; then
             echo "::error::These commits do not follow the commit rules in CONTRIBUTING.md:"
             echo "$invalid"

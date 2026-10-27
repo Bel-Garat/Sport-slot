@@ -12,7 +12,8 @@ Každá commit zpráva musí začínat jedním z následujících prefixů podle
 * **feat:** Přidání nové funkcionality (např. `feat: založení endpointu pro kurty`)
 * **fix:** Oprava chyby (např. `fix: oprava padání vyhledávání`)
 * **refactor:** Úprava struktury kódu bez změny chování (např. `refactor: přepsání komponenty detailu`)
-* **chore:** Pomocné práce, konfigurace, úprava dokumentace (např. `chore: aktualizace README`)
+* **chore:** Pomocné práce a konfigurace (např. `chore: úprava CI`)
+* **docs:** Úprava dokumentace (např. `docs: doplnění návodu k databázi`)
 
 ## 3. Pull Requesty (PR)
 1. Svou hotovou větev pushněte na GitHub.

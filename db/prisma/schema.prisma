@@ -1,0 +1,180 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["app_auth", "venue", "reservation", "review", "audit"]
+}
+
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  googleId  String   @unique @map("google_id") @db.Text
+  email     String   @db.VarChar(254)
+  name      String   @db.VarChar(150)
+  roles Role[] @default([PLAYER])
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  submittedRequests ManagerRequest[] @relation("SubmittedManagerRequests")
+  decidedRequests   ManagerRequest[] @relation("DecidedManagerRequests")
+
+  @@map("users")
+  @@schema("app_auth")
+}
+
+
+enum Role {
+  PLAYER
+  MANAGER
+  ADMIN
+
+  @@schema("app_auth")
+}
+
+
+model ManagerRequest {
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String               @map("user_id") @db.Uuid
+  message     String?              @db.Text
+  status      ManagerRequestStatus @default(PENDING)
+  decidedById String?              @map("decided_by_id") @db.Uuid
+  createdAt   DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  decidedAt   DateTime?            @map("decided_at") @db.Timestamptz(6)
+
+  user      User  @relation("SubmittedManagerRequests", fields: [userId], references: [id])
+  decidedBy User? @relation("DecidedManagerRequests", fields: [decidedById], references: [id])
+
+  @@map("manager_requests")
+  @@schema("app_auth")
+}
+
+enum ManagerRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@schema("app_auth")
+}
+
+
+model Venue {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  managerId   String   @map("manager_id") @db.Uuid
+  name        String   @db.VarChar(100)
+  address     String   @db.VarChar(200)
+  city        String   @db.VarChar(100)
+  description String?  @db.VarChar(2000)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  openingHours OpeningHours[]
+  courts Court[]
+
+  @@unique([name, address, city])
+  @@map("venues")
+  @@schema("venue")
+}
+
+
+model OpeningHours {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  venueId   String   @map("venue_id") @db.Uuid
+  dayOfWeek Int      @map("day_of_week") @db.SmallInt
+  openTime  DateTime @map("open_time") @db.Time(6)
+  closeTime DateTime @map("close_time") @db.Time(6)
+
+  venue Venue @relation(fields: [venueId], references: [id])
+
+  @@unique([venueId, dayOfWeek])
+  @@map("opening_hours")
+  @@schema("venue")
+}
+
+
+model Court {
+  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  venueId String  @map("venue_id") @db.Uuid
+  name    String  @db.VarChar(50)
+  sport   String  @db.VarChar(50)
+  surface String  @db.VarChar(100)
+  indoor  Boolean
+  priceRules PriceRule[]
+
+  venue Venue @relation(fields: [venueId], references: [id])
+
+  @@unique([venueId, name])
+  @@map("courts")
+  @@schema("venue")
+}
+
+
+model PriceRule {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courtId      String   @map("court_id") @db.Uuid
+  dayOfWeek    Int      @map("day_of_week") @db.SmallInt
+  startTime    DateTime @map("start_time") @db.Time(6)
+  endTime      DateTime @map("end_time") @db.Time(6)
+  pricePerHour Decimal  @map("price_per_hour") @db.Decimal(10, 2)
+
+  court Court @relation(fields: [courtId], references: [id])
+
+  @@map("price_rules")
+  @@schema("venue")
+}
+
+
+model Reservation {
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courtId     String            @map("court_id") @db.Uuid
+  venueId     String            @map("venue_id") @db.Uuid
+  playerId    String            @map("player_id") @db.Uuid
+  playerName  String            @map("player_name") @db.VarChar(150)
+  startAt     DateTime          @map("start_at") @db.Timestamptz(6)
+  endAt       DateTime          @map("end_at") @db.Timestamptz(6)
+  totalPrice  Decimal           @map("total_price") @db.Decimal(10, 2)
+  status      ReservationStatus @default(ACTIVE)
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  cancelledAt DateTime?         @map("cancelled_at") @db.Timestamptz(6)
+
+  @@map("reservations")
+  @@schema("reservation")
+}
+
+enum ReservationStatus {
+  ACTIVE
+  CANCELLED
+
+  @@schema("reservation")
+}
+
+
+model Review {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reservationId String   @unique @map("reservation_id") @db.Uuid
+  venueId       String   @map("venue_id") @db.Uuid
+  playerId      String   @map("player_id") @db.Uuid
+  rating        Int      @db.SmallInt
+  comment       String?  @db.VarChar(2000)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("reviews")
+  @@schema("review")
+}
+
+model AuditLog {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String?  @map("user_id") @db.Uuid
+  action     String   @db.VarChar(100)
+  entityType String   @map("entity_type") @db.VarChar(50)
+  entityId   String   @map("entity_id") @db.Uuid
+  details    Json?    @db.JsonB
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("audit_logs")
+  @@schema("audit")
+}

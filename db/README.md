@@ -2,339 +2,211 @@
 
 ## 1. Overview
 
-SportSlot uses **PostgreSQL hosted on Supabase** as its shared development database.
+SportSlot uses **PostgreSQL 17 hosted on Supabase** as its shared development database.
 
-The database is hosted in the cloud and is accessible to authorized members of the development team.
+The backend architecture is:
 
-The backend will be developed using **Node.js, Express.js and Prisma ORM**.
+**Frontend → API Gateway → Express Services → Prisma ORM → PostgreSQL**
 
-Docker and a locally installed PostgreSQL server are not required because the database is hosted remotely.
+Supabase Data API is disabled. All application requests will be handled through our Express backend.
 
-### Application architecture
+The database schema and initial migration are implemented and deployed. Backend integration is still in progress.
 
-The planned data flow is:
-
-**Frontend → API Gateway → Express Services → Prisma ORM → PostgreSQL (Supabase)**
-
-Each component has a specific responsibility:
-
-- **Frontend** – provides the user interface.
-- **API Gateway** – routes incoming API requests to the appropriate backend service.
-- **Express Services** – implement business logic and application endpoints.
-- **Prisma ORM** – provides programmatic access to PostgreSQL from the backend.
-- **PostgreSQL** – stores application data.
-- **Supabase** – hosts and manages the PostgreSQL database.
-
-Supabase Data API is disabled because SportSlot will implement its own REST API using Express.js.
-
-Prisma will communicate with PostgreSQL using a database connection string. The connection method depends on the application's runtime environment.
-
-## 2. Project information
+## 2. Technology and project information
 
 | Property | Value |
 |---|---|
-| Organization | SportSlot |
-| Supabase project | SportSlot-dev |
-| Database provider | Supabase |
-| Database engine | PostgreSQL |
-| Region | West EU (Ireland), eu-west-1 |
-| Environment | Development |
-| Supabase plan | Free |
-| Backend | Node.js + Express.js |
-| ORM | Prisma (planned) |
-| Current connection method | Session pooler |
+| Database | PostgreSQL 17 |
+| Hosting | Supabase Free |
+| Project | SportSlot-dev |
+| Region | EU West (Ireland) |
+| ORM | Prisma 7 |
+| Package manager | npm (workspaces) |
+| Connection | Session pooler, port 5432 |
+| Initial migration | `20261030_init` |
+| Tables | 9 across 5 schemas |
 
-The Supabase project contains a running PostgreSQL instance.
+The shared database is a development environment, but its Supabase main branch is labeled **PRODUCTION**. All schema changes must be coordinated.
 
-Application-specific tables will be created later using Prisma migrations based on the approved data model.
+## 3. Local setup
 
-## 3. Requirements
+**Requirements:** Node.js 22+, npm, repository access, and authorized database credentials.
 
-To work with the shared database, developers need:
-
-- Access to the SportSlot GitHub repository.
-- Authorized database credentials provided privately by the project administrator.
-- A local environment configuration file.
-- Internet connectivity.
-
-Optional development tools:
-
-- PostgreSQL client (`psql`) for testing and database administration.
-- Node.js and a package manager for backend development.
-- Prisma ORM once the database implementation is configured.
-
-A Supabase dashboard account is not required for a direct PostgreSQL client connection if valid database credentials have been provided.
-
-## 4. Local environment setup
-
-Environment configuration files are stored in the **root directory of the repository**.
-
-### Environment files
-
-| File | Purpose | Committed to Git |
-|---|---|---|
-| `.env.example` | Configuration template without real credentials | Yes |
-| `.env` | Local configuration containing real credentials | No |
-
-The `.env` file is excluded from version control through `.gitignore`.
-
-### Step 1 – Clone the repository
+Clone the repository:
 
 ```bash
 git clone https://github.com/Bel-Garat/Sport-slot.git
 cd Sport-slot
 ```
 
-### Step 2 – Create the local environment file
+Install dependencies:
 
-From the repository root, run:
+```bash
+npm ci
+```
+
+Create a local environment file:
 
 ```bash
 cp .env.example .env
 ```
 
-This creates a local copy of the configuration template.
+Configure `DATABASE_URL` in the root `.env` using credentials provided privately by the project administrator.
 
-### Step 3 – Obtain database credentials
-
-Request the development database connection information from an authorized project administrator.
-
-Alternatively, authorized Supabase members can obtain the connection string through:
-
-1. Sign in to the Supabase dashboard.
-2. Open the **SportSlot** organization.
-3. Select the **SportSlot-dev** project.
-4. Click **Connect**.
-5. Open **Direct → Connection Method**.
-6. Select **Session pooler** when connecting from an IPv4-only environment.
-7. Keep the connection string type set to **URI**.
-
-The development environment has been successfully tested using the Session pooler on port `5432`.
-
-### Step 4 – Configure DATABASE_URL
-
-Open the root `.env` file and replace the placeholder connection string with the authorized database connection information.
-
-Example structure:
+Example format:
 
 ```dotenv
 DATABASE_URL="postgresql://postgres.PROJECT_REF:PASSWORD@POOLER_HOST:5432/postgres?sslmode=require"
 ```
 
-Replace `PROJECT_REF`, `PASSWORD`, and `POOLER_HOST` with the correct values.
+Replace the placeholders with the authorized connection details. Never commit `.env` or share credentials in GitHub.
 
-This example is not a working connection string.
-
-Connection string components:
-
-- `postgresql://` – PostgreSQL connection protocol.
-- `postgres.PROJECT_REF` – database username used by the Supabase shared pooler.
-- `PASSWORD` – database password.
-- `POOLER_HOST` – Supabase pooler hostname.
-- `5432` – Session pooler port.
-- `/postgres` – default database name.
-- `sslmode=require` – requires an encrypted PostgreSQL connection.
-
-Passwords containing special URL characters must be percent-encoded.
-
-Never commit the real connection string or password to Git.
-
-**Important:** Creating `.env` does not automatically connect the application to PostgreSQL. Backend processes must load the environment configuration, and Prisma must be configured separately.
-
-## 5. PostgreSQL connection methods
-
-Supabase provides multiple PostgreSQL connection methods.
-
-### Direct connection – port 5432
-
-Connects directly to PostgreSQL without the Supabase shared connection pooler.
-
-Recommended for persistent applications, administrative tools, and database migrations when network connectivity allows it.
-
-Direct connections normally require IPv6 connectivity on the Supabase Free plan.
-
-### Session pooler – port 5432
-
-Uses a Supabase connection pooler that maintains session-level database connection behavior.
-
-Suitable for persistent backend applications and development environments that require IPv4 connectivity.
-
-**This is the connection method currently tested for SportSlot development.**
-
-### Transaction pooler – port 6543
-
-Shares database connections between short transactions.
-
-Primarily designed for serverless applications and environments with many short-lived database connections.
-
-Some PostgreSQL session features and prepared-statement behaviors require special consideration.
-
-### Choosing a connection method
-
-For the current local development setup, the Session pooler is a supported option.
-
-For future backend deployment, the connection method should be evaluated according to the hosting platform and its network capabilities.
-
-The Prisma connection configuration will be finalized during the database implementation task.
-
-## 6. Database connection verification
-
-Connection verification consists of two separate checks.
-
-### Test A – Supabase SQL Editor
-
-Open **SportSlot-dev → SQL Editor** in the Supabase dashboard.
-
-Execute:
-
-```sql
-SELECT
-    current_database() AS database_name,
-    current_user AS database_user,
-    NOW() AS server_time,
-    version() AS postgres_version;
-```
-
-This query retrieves information about the connected PostgreSQL database.
-
-It does not create, modify, or delete data.
-
-A successful result confirms that PostgreSQL is running and can execute SQL queries through the Supabase dashboard.
-
-### Test B – External PostgreSQL connection
-
-To verify that PostgreSQL is reachable outside Supabase, use the PostgreSQL command-line client `psql`.
-
-On macOS with Homebrew, client tools can be installed using:
+Validate the Prisma schema:
 
 ```bash
-brew install libpq
+npm exec --workspace @sportslot/db -- prisma validate
 ```
 
-Verify the installation:
+Check database migration status:
 
 ```bash
-"$(brew --prefix libpq)/bin/psql" --version
+npm exec --workspace @sportslot/db -- prisma migrate status
 ```
 
-Connect using the Supabase Session pooler:
+The initial migration should already be applied to the shared Supabase database.
 
-```bash
-"$(brew --prefix libpq)/bin/psql" \
-  "host=POOLER_HOST port=5432 dbname=postgres user=postgres.PROJECT_REF sslmode=require" \
-  -W
-```
+A local PostgreSQL server is **not required** for normal development.
 
-Replace the placeholder host and username with the actual connection parameters from Supabase.
+## 4. Database structure
 
-The `-W` option prompts for the database password interactively, avoiding the need to include it in the command itself.
-
-After a successful connection, the terminal displays a PostgreSQL prompt such as:
-
-```text
-postgres=>
-```
-
-Execute:
-
-```sql
-SELECT current_database(), current_user;
-```
-
-A successful result confirms that the local PostgreSQL client can connect to the remote database and execute queries.
-
-Disconnect using:
-
-```text
-\q
-```
-
-**Important:** This test verifies external PostgreSQL connectivity. It does not verify Prisma or Express integration.
-
-## 7. Prisma ORM and database migrations
-
-The database schema will be managed through **Prisma ORM**.
-
-The schema will be based on the approved SportSlot data model, including its entities, attributes, and relationships.
-
-Planned structure:
+The Prisma configuration is located in `db/prisma7.config.ts`.
 
 ```text
 db/
 ├── README.md
+├── package.json
+├── prisma7.config.ts
 └── prisma/
     ├── schema.prisma
     └── migrations/
+        └── 20261030_init/
+            └── migration.sql
 ```
 
-### Prisma schema
+The database contains the following tables:
 
-The `schema.prisma` file describes the application's database models, fields, data types, and relationships.
+| Schema | Tables |
+|---|---|
+| `app_auth` | `users`, `manager_requests` |
+| `venue` | `venues`, `courts`, `opening_hours`, `price_rules` |
+| `reservation` | `reservations` |
+| `review` | `reviews` |
+| `audit` | `audit_logs` |
 
-### Prisma migrations
+`app_auth` is used instead of `auth` to avoid conflicts with Supabase's internal authentication schema.
 
-Prisma migrations translate changes in the database schema into SQL operations that create or update PostgreSQL structures.
+Foreign keys are enforced within services. Cross-service UUID references are intentionally stored without database foreign keys and must be validated by the backend.
 
-Migrations must be reviewed before being applied to the shared development database.
+Prisma uses PostgreSQL enums for roles and statuses. Primary key UUIDs are generated by PostgreSQL using `gen_random_uuid()`.
 
-The Prisma version, dependencies, configuration, and migration commands will be established during the second S1W1 database task.
+## 5. Prisma migrations
 
-The actual Prisma integration has **not yet been implemented**.
+Useful commands (run from the repository root):
 
-## 8. Security guidelines
+| Purpose | Command |
+|---|---|
+| Validate schema | `npm exec --workspace @sportslot/db -- prisma validate` |
+| Check migrations | `npm exec --workspace @sportslot/db -- prisma migrate status` |
+| Deploy migrations | `npm exec --workspace @sportslot/db -- prisma migrate deploy` |
+| Generate client | `npm exec --workspace @sportslot/db -- prisma generate` |
 
-All developers must follow these rules:
+The initial migration `20261030_init` was deployed to Supabase on October 30, 2026.
 
-- Never commit `.env` files or real credentials.
-- Never expose database credentials to frontend code.
-- Never include passwords in Pull Requests, issues, screenshots, or public documentation.
-- Share credentials only through approved private channels.
-- Grant access only to authorized team members.
-- Prefer limited database privileges where practical.
-- Coordinate all database schema changes with the backend team.
-- Do not manually modify shared database structures outside the agreed migration process.
-- Rotate credentials immediately if they are exposed.
+It includes custom PostgreSQL rules for:
 
-The main PostgreSQL database account has elevated privileges and should not be distributed unnecessarily.
+- Unique emails, Google IDs, venues, and courts.
+- Valid weekdays, time intervals, prices, and ratings.
+- Prevention of overlapping active reservations and price intervals.
+- Manager request validation and required `PLAYER` role.
+- Append-only audit log protection.
 
-## 9. Team collaboration
+The migration uses the `btree_gist` extension for exclusion constraints.
 
-The development database is shared across the SportSlot backend team.
+**Migration workflow:** Modify the Prisma schema, create a new migration in an isolated development environment, review and test the SQL, then deploy the approved migration to Supabase.
 
-Each developer should maintain their own local environment configuration.
+Do not modify already-applied migrations.
 
-Authorized developers connect to the same cloud PostgreSQL database using approved credentials.
+**Never run `prisma migrate reset`, `prisma db push`, or unreviewed `prisma migrate dev` against shared Supabase.**
 
-GitHub stores the shared application code, Prisma schema, migration files, and documentation.
+`prisma migrate deploy` modifies the database specified by `DATABASE_URL`. Always verify the target before executing it.
 
-**Git branches do not create independent PostgreSQL databases.**
+## 6. Local database testing
 
-Database schema changes must be coordinated because they can affect other developers using the shared instance.
+For isolated migration tests, developers may install PostgreSQL 17:
 
-Each implementation task should be developed in a dedicated Git branch and submitted through a Pull Request.
+```bash
+brew install postgresql@17
+brew services start postgresql@17
+```
 
-Repository: https://github.com/Bel-Garat/Sport-slot
+Create a test database:
 
-## 10. Current status
+```bash
+"$(brew --prefix postgresql@17)/bin/createdb" -h localhost sportslot_test
+```
 
-Completed:
+Deploy migrations to this local database:
 
-- Supabase organization created.
-- PostgreSQL development project created.
-- Database health confirmed in Supabase.
-- SQL queries executed successfully in Supabase SQL Editor.
-- External PostgreSQL connection tested successfully using `psql` on macOS.
-- Session pooler connection verified on port `5432`.
-- Root environment configuration template prepared.
-- Database setup documentation prepared.
+```bash
+DATABASE_URL="postgresql://$(whoami)@127.0.0.1:5432/sportslot_test?schema=public" npm exec --workspace @sportslot/db -- prisma migrate deploy
+```
 
-Pending:
+This example assumes the default local PostgreSQL setup on macOS. It must not be used against shared Supabase.
 
-- Complete secure database access handover to the development team.
-- Complete Pull Request review and merge.
-- Configure Prisma ORM in the repository.
-- Implement the approved database schema.
-- Create and apply initial Prisma migrations.
-- Verify backend-to-database integration through Prisma.
+## 7. Seed data
 
-The database infrastructure is ready for further backend development. Application-level database integration will be completed in the next task.
+**Seed implementation is planned for a separate backend integration task.**
+
+Because SportSlot uses one shared Supabase development database, each developer must not independently seed it.
+
+The planned approach is:
+
+- One authorized maintainer runs the shared development seed.
+- The seed must be idempotent to prevent duplicate records.
+- Example data may include venues, courts, opening hours, and price rules.
+- Developers can seed their own isolated local databases independently.
+- Seeding must never run automatically during migration deployment or application startup.
+
+No seed script has been implemented yet.
+
+## 8. Security and collaboration
+
+- Keep database credentials outside Git.
+- Never expose credentials to frontend code.
+- Coordinate shared database changes with the backend team.
+- Use dedicated branches and Pull Requests.
+- Configure service-specific database permissions before backend integration.
+- Establish a recovery plan before applying new shared migrations.
+- Do not treat database triggers as a replacement for authorization.
+
+Git branches do not create independent Supabase databases.
+
+## 9. Current status
+
+**Completed:**
+
+- Supabase PostgreSQL development database configured.
+- Prisma 7 workspace and all nine models implemented.
+- Initial migration created and tested locally.
+- Database constraints and audit protection tested.
+- Initial migration successfully deployed through Prisma Migrate.
+- All nine tables verified in Supabase.
+
+**Pending:**
+
+- Integrate Prisma Client with Express services.
+- Configure service-specific database permissions.
+- Implement an optional development seed.
+- Complete PR review and merge.
+
+The shared database schema is ready for backend integration.

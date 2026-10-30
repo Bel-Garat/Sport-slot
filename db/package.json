@@ -1,0 +1,9 @@
+{
+  "name": "@sportslot/db",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "dotenv": "^18.0.9",
+    "prisma": "^7.10.1"
+  }
+}

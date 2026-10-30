@@ -16,7 +16,7 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   googleId  String   @unique @map("google_id") @db.Text
   email     String   @db.VarChar(254)
   name      String   @db.VarChar(150)
@@ -40,7 +40,7 @@ enum Role {
 
 
 model ManagerRequest {
-  id          String               @id @default(uuid()) @db.Uuid
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId      String               @map("user_id") @db.Uuid
   message     String?              @db.Text
   status      ManagerRequestStatus @default(PENDING)
@@ -65,7 +65,7 @@ enum ManagerRequestStatus {
 
 
 model Venue {
-  id          String   @id @default(uuid()) @db.Uuid
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   managerId   String   @map("manager_id") @db.Uuid
   name        String   @db.VarChar(100)
   address     String   @db.VarChar(200)
@@ -82,7 +82,7 @@ model Venue {
 
 
 model OpeningHours {
-  id        String   @id @default(uuid()) @db.Uuid
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   venueId   String   @map("venue_id") @db.Uuid
   dayOfWeek Int      @map("day_of_week") @db.SmallInt
   openTime  DateTime @map("open_time") @db.Time(6)
@@ -97,7 +97,7 @@ model OpeningHours {
 
 
 model Court {
-  id      String  @id @default(uuid()) @db.Uuid
+  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   venueId String  @map("venue_id") @db.Uuid
   name    String  @db.VarChar(50)
   sport   String  @db.VarChar(50)
@@ -114,7 +114,7 @@ model Court {
 
 
 model PriceRule {
-  id           String   @id @default(uuid()) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   courtId      String   @map("court_id") @db.Uuid
   dayOfWeek    Int      @map("day_of_week") @db.SmallInt
   startTime    DateTime @map("start_time") @db.Time(6)
@@ -129,7 +129,7 @@ model PriceRule {
 
 
 model Reservation {
-  id          String            @id @default(uuid()) @db.Uuid
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   courtId     String            @map("court_id") @db.Uuid
   venueId     String            @map("venue_id") @db.Uuid
   playerId    String            @map("player_id") @db.Uuid
@@ -154,7 +154,7 @@ enum ReservationStatus {
 
 
 model Review {
-  id            String   @id @default(uuid()) @db.Uuid
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   reservationId String   @unique @map("reservation_id") @db.Uuid
   venueId       String   @map("venue_id") @db.Uuid
   playerId      String   @map("player_id") @db.Uuid
@@ -167,7 +167,7 @@ model Review {
 }
 
 model AuditLog {
-  id         String   @id @default(uuid()) @db.Uuid
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId     String?  @map("user_id") @db.Uuid
   action     String   @db.VarChar(100)
   entityType String   @map("entity_type") @db.VarChar(50)

@@ -2,6 +2,9 @@
   "name": "@sportslot/db",
   "private": true,
   "type": "module",
+  "scripts": {
+    "seed": "prisma db execute --file prisma/seed.sql"
+  },
   "devDependencies": {
     "dotenv": "^18.0.9",
     "prisma": "^7.10.1"

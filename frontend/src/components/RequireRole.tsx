@@ -6,6 +6,14 @@ import type { Role } from "@/lib/api";
 import { loginPath, useAuth } from "@/lib/auth";
 import { NoPermission } from "@/components/NoPermission";
 
+/**
+ * Chrání stránku podle role. Použití v `page.tsx`:
+ *   <RequireRole roles={["MANAGER"]}>…obsah stránky…</RequireRole>
+ * - bez `roles` stačí libovolný přihlášený uživatel;
+ * - nepřihlášeného přesměruje na `/login?next=<aktuální stránka>`;
+ * - přihlášený bez žádné z rolí uvidí „Nemáte oprávnění“.
+ * Je to jen UX – skutečné oprávnění ověřuje gateway a služby (401 / 403).
+ */
 export function RequireRole({
   roles,
   children,

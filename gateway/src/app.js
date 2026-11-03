@@ -22,3 +22,13 @@ export function createApp(serviceUrls) {
 	})
 	return app
 }
+
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const path = require('path');
+
+// Načtení OpenAPI souboru
+const openapiDocument = YAML.load(path.join(__dirname, '../../docs/openapi.yaml'));
+
+// Vystavení Swagger UI na adrese /api-docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiDocument));

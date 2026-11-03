@@ -47,3 +47,8 @@ Každý PR do `main` spouští GitHub Actions (`.github/workflows/ci.yml`):
 * `npm run lint`, `npm test` a `npm run build` ve všech částech.
 
 Stejné kontroly spustíte lokálně příkazy `npm run lint`, `npm test` a `npm run build`.
+
+## Jak přidat nový endpoint do OpenAPI
+1. Otevři soubor `docs/openapi.yaml`.
+2. V sekci `paths` přidej požadovanou cestu a HTTP metodu (`get`, `post` atd.).
+3. Po uložení souboru se dokumentace automaticky aktualizuje na adrese `/api-docs`.

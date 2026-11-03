@@ -34,4 +34,5 @@ test('forwards /api/venue requests to the venue service without the /api prefix'
 test('answers 404 for paths no service owns', async () => {
 	const response = await request(createApp(serviceUrls)).get('/api/unknown')
 	assert.equal(response.status, 404)
+	assert.equal(response.body.uuAppErrorMap['unknown/unknownCommand'].type, 'error')
 })

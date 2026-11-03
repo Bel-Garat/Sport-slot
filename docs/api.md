@@ -3,6 +3,73 @@
 Tento dokument obsahuje seznam endpointů, které zajišťuje `venue-service` (správa sportovišť a kurtů). 
 Gateway předává požadavky této službě po ověření uživatele v `auth-service`.
 
+## 0. Formát odpovědí a chyb
+
+Platí pro gateway i všechny mikroslužby. Vychází ze šablony commandu v Command listu (uuApp). Implementace je v balíčku `packages/api-format` (`@sportslot/api-format`).
+
+### Úspěšná odpověď
+HTTP 200, tělo = dtoOut a vždy klíč `uuAppErrorMap` (bez varování prázdný `{}`).
+
+```json
+{ "id": "…", "name": "Tenisový areál Lužánky", "uuAppErrorMap": {} }
+```
+
+Seznamy vracejí `itemList` a `pageInfo` (výchozí `pageSize` je 20):
+
+```json
+{ "itemList": [ … ], "pageInfo": { "pageIndex": 0, "pageSize": 20, "total": 42 }, "uuAppErrorMap": {} }
+```
+
+### Chyba
+Tělo obsahuje jen `uuAppErrorMap`. Klíč je `{command}/{kódChyby}`, např. `venue/get/venueDoesNotExist`. `message` je česky, aby ji frontend mohl rovnou zobrazit. `paramMap` nese podrobnosti (může být `{}`).
+
+```json
+{
+  "uuAppErrorMap": {
+    "venue/get/venueDoesNotExist": {
+      "type": "error",
+      "message": "Sportoviště nenalezeno.",
+      "paramMap": { "id": "…" }
+    }
+  }
+}
+```
+
+### Varování
+Požadavek projde (HTTP 200), varování je v `uuAppErrorMap` s `"type": "warning"`. Jediné společné varování je `unsupportedKeys`: dtoIn obsahuje klíče, které command nezná, a ty se ignorují. `paramMap`: `{ "unsupportedKeyList": ["foo"] }`.
+
+### HTTP statusy a kódy chyb
+
+| HTTP | Kód chyby | Kdy | Zpráva |
+|---|---|---|---|
+| 400 | `invalidDtoIn` | dtoIn neprošel validací nebo tělo není platný JSON. `paramMap`: `invalidTypeKeyMap`, `invalidValueKeyMap`, `missingKeyMap` | Vstupní data nejsou platná. |
+| 401 | `notAuthenticated` | Command vyžaduje přihlášení a uživatel přihlášený není. | Nejste přihlášen. |
+| 403 | `notAuthorized` | Uživatel nemá potřebnou roli nebo není vlastníkem (např. cizí sportoviště). | Nemáte oprávnění. |
+| 404 | `{entita}DoesNotExist` | Záznam neexistuje, např. `venue/get/venueDoesNotExist`. | Např. Sportoviště nenalezeno. |
+| 404 | `unknownCommand` | Neexistující URL. | Neznámý příkaz. |
+| 409 | `{entita}AlreadyExists` | Porušení jedinečnosti, např. `venue/create/venueAlreadyExists`, `court/create/courtAlreadyExists`. | Např. Kurt s tímto názvem už existuje. |
+| 500 | `unexpectedError` | Neočekávaná chyba serveru. Podrobnosti jen v logu služby, nikdy v odpovědi. | Neočekávaná chyba serveru. |
+
+Kódy chyb jsou anglicky v camelCase. Každý command uvádí své konkrétní chyby v sekci **Seznam chyb** v Command listu.
+
+### Použití v mikroslužbě
+
+```js
+import { AppError, invalidDtoIn, unsupportedKeys } from '@sportslot/api-format'
+
+app.get('/venue/get', async (req, res) => {
+	if (!req.query.id) throw invalidDtoIn({ missingKeyMap: { id: 'Klíč id je povinný.' } })
+	const venue = await venueDao.get(req.query.id)
+	if (!venue) throw new AppError('venueDoesNotExist', 'Sportoviště nenalezeno.', 404, { id: req.query.id })
+	res.json({ ...venue, uuAppErrorMap: unsupportedKeys(req, req.query, ['id']) })
+})
+```
+
+Command (`venue/get`) se do klíče doplní automaticky z URL. `app.use(notFound)` a `app.use(errorHandler)` jsou už zapojené v `app.js` každé služby i gateway; nové routy se přidávají **před** ně. Express 5 předá vyhozenou chybu do `errorHandler` i z `async` funkce. Pro 401 a 403 jsou připravené `notAuthenticated()` a `notAuthorized()`.
+
+### Frontend
+Když `response.ok` je `false`, zobrazte `message` první položky v `uuAppErrorMap`. Pro konkrétní chování (např. přesměrování na přihlášení při 401) rozhodujte podle HTTP statusu nebo podle konce klíče (`…/notAuthenticated`), ne podle textu zprávy.
+
 ## 1. Sportoviště (Venue)
 
 ### `POST venue/create`

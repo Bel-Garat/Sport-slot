@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, List, User, X } from "@phosphor-icons/react";
+import { ArrowUpRight, List, X } from "@phosphor-icons/react";
 import { Logo } from "@/components/Logo";
 import { loginPath, useAuth } from "@/lib/auth";
 
@@ -47,9 +47,8 @@ export function SiteHeader() {
           {showLogin && (
             <Link
               href={loginPath}
-              className="button button-dark group hidden gap-3 pl-2 sm:inline-flex"
+              className="button button-dark hidden sm:inline-flex"
             >
-              <SignInBadge />
               Přihlásit se
             </Link>
           )}
@@ -93,24 +92,12 @@ export function SiteHeader() {
           <Link
             href={loginPath}
             onClick={() => setOpen(false)}
-            className="button button-dark group mt-3 w-full gap-3 sm:hidden"
+            className="button button-dark mt-3 w-full sm:hidden"
           >
-            <SignInBadge />
             Přihlásit se
           </Link>
         )}
       </nav>
     </header>
-  );
-}
-
-function SignInBadge() {
-  return (
-    <span
-      aria-hidden="true"
-      className="flex size-8 items-center justify-center rounded-full bg-ball text-brand-900 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
-    >
-      <User size={16} weight="bold" />
-    </span>
   );
 }

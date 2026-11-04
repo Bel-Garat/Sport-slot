@@ -18,7 +18,7 @@ Styling je v Tailwind CSS v4 (dohodnuto v týmu 4. 11. 2026). Layouty používaj
 - Logo: `<Logo />` (značka + název, odkaz na úvod) a `<LogoMark />` (jen značka) v `src/components/Logo.tsx`, favicon je `src/app/icon.svg`.
 - Hlavička (`SiteHeader`) a patička (`SiteFooter`) jsou v root layoutu. V pravé části hlavičky je tlačítko „Přihlásit se“ (odkaz na `/login`, zobrazí se jen nepřihlášenému). Stránku `/login` a avatar přihlášeného uživatele doplní úkol FE přihlášení.
 
-Podklady značky, marketingové texty a zadání pro AI video jsou v [`docs/brand`](../docs/brand/README.md). Hero obsahuje tiché nekonečné video na pozadí s pauzou, statickým fallbackem a respektem k reduced motion / save-data. Video `public/media/court-loop.mp4` je AI záběr tenistky (720p, 4,5 s), konec je prolnutý se začátkem, aby smyčka nenaskočila. Plakát před spuštěním videa je jeho první snímek `public/images/hero-poster.webp`. Rezervace na úvodní stránce je jasně označená frontendová ukázka bez odesílání dat.
+Podklady značky, marketingové texty a zadání pro AI video jsou v [`docs/brand`](../docs/brand/README.md). Hero obsahuje tiché nekonečné video na pozadí s pauzou, statickým fallbackem a respektem k reduced motion / save-data. Video `public/media/court-loop.mp4` je AI záběr tenistky (720p, zrychleno na 1,25×, 3,5 s), konec je prolnutý se začátkem, aby smyčka nenaskočila. Plakát před spuštěním videa je jeho první snímek `public/images/hero-poster.webp`. Rezervace na úvodní stránce je jasně označená frontendová ukázka bez odesílání dat.
 
 ## Ochrana stránek podle role
 

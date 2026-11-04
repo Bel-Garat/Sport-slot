@@ -2,7 +2,7 @@
 
 ## Stav
 
-Hotovo 4. 11. 2026: `court-loop.mp4` je vygenerovaný AI záběr tenistky shora (5 s, 1280 × 720). Pro plynulou smyčku je posledních 0,6 s prolnuto se začátkem (výsledek 4,5 s). Plakát `frontend/public/images/hero-poster.webp` je první snímek smyčky.
+Hotovo 4. 11. 2026: `court-loop.mp4` je vygenerovaný AI záběr tenistky shora (5 s, 1280 × 720). Zrychleno na 1,25× a pro plynulou smyčku je posledních 0,5 s prolnuto se začátkem (výsledek 3,5 s). Plakát `frontend/public/images/hero-poster.webp` je první snímek smyčky.
 
 ## Podklad
 

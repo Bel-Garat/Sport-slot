@@ -8,7 +8,7 @@ Značka pro lidi, kteří chtějí dostat sport zpátky do svého týdne.
 
 ## Vizuální systém
 
-Symbol je tenisový kurt shora (čáry jsou vynechané mezery v ploše) a nad ním míček ve hře: kurt je váš slot, míček hra, která na něm začne. Záměrně nepoužívá písmeno S, aby se nepletl s jinými sportovními značkami. Používejte dodané SVG, nepřekreslujte symbol podle generovaných mockupů.
+Symbol tvoří tři dráhy se zaobleným startem a šikmým koncem, každá kratší než předchozí: pohyb, rychlost a cesta ke hře. Záměrně nejde o písmeno S, aby se značka nepletla s jinými sportovními aplikacemi. Používejte dodané SVG, nepřekreslujte symbol podle generovaných mockupů.
 
 | Role | Barva |
 | --- | --- |

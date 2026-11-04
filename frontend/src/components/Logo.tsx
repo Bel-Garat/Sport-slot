@@ -3,7 +3,7 @@ import Link from "next/link";
 export function LogoMark({ className = "size-9" }: { className?: string }) {
   return (
     <svg viewBox="0 0 48 48" className={className} fill="currentColor" aria-hidden="true">
-      <path d="M40 5H20C11.72 5 5 11.72 5 20h7.5a7.5 7.5 0 0 1 7.5-7.5h15L40 5ZM17.25 20.5H38L33.5 27.5H17.25A3.5 3.5 0 0 1 17.25 20.5ZM8 43H28c8.28 0 15-6.72 15-15h-7.5a7.5 7.5 0 0 1-7.5 7.5H13L8 43Z" />
+      <path d="M30 11H15A13 13 0 0 0 15 37L18.5 31.5H15A7.5 7.5 0 0 1 15 16.5H26.5L30 11ZM18 37H33A13 13 0 0 0 33 11L29.5 16.5H33A7.5 7.5 0 0 1 33 31.5H21.5L18 37Z" />
     </svg>
   );
 }

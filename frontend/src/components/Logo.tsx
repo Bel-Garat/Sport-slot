@@ -1,35 +1,18 @@
 import Link from "next/link";
 
-export function LogoMark({ className = "size-8" }: { className?: string }) {
+export function LogoMark({ className = "size-9" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
-      <rect width="32" height="32" rx="8" fill="var(--color-brand-900)" />
-      <rect
-        x="7"
-        y="7"
-        width="18"
-        height="18"
-        rx="2"
-        fill="none"
-        stroke="white"
-        strokeWidth="2"
-      />
-      <path d="M16 7v18" stroke="white" strokeWidth="2" />
-      <circle cx="21.5" cy="12" r="3.5" fill="var(--color-ball)" />
+    <svg viewBox="0 0 48 48" className={className} fill="currentColor" aria-hidden="true">
+      <path d="M41.07 13.81A13 13 0 0 0 33 11H15A13 13 0 0 0 4.81 32.07L8.74 28.14A7.5 7.5 0 0 1 15 16.5H33A7.5 7.5 0 0 1 37.14 17.74ZM6.93 34.19A13 13 0 0 0 15 37H33A13 13 0 0 0 43.19 15.93L39.26 19.86A7.5 7.5 0 0 1 33 31.5H15A7.5 7.5 0 0 1 10.86 30.26Z" />
     </svg>
   );
 }
 
-export function Logo() {
+export function Logo({ className = "" }: { className?: string }) {
   return (
-    <Link
-      href="/"
-      className="inline-flex items-center gap-2 rounded-md font-display text-xl font-bold tracking-tight text-brand-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600"
-    >
+    <Link href="/" aria-label="SportSlot, úvodní stránka" className={`inline-flex shrink-0 items-center gap-2.5 rounded-sm font-display text-[27px] leading-none font-bold tracking-[-1.4px] ${className}`}>
       <LogoMark />
-      <span>
-        Sport<span className="text-brand-600">Slot</span>
-      </span>
+      <span>sportslot<span className="text-brand-600">.</span></span>
     </Link>
   );
 }

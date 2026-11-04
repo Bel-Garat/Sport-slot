@@ -9,14 +9,16 @@ npm run dev:frontend # http://localhost:3000
 ```
 
 Adresu API gateway čte aplikace z `NEXT_PUBLIC_API_URL` (viz `.env.example`).
-Styling je v [Tailwind CSS v4](https://tailwindcss.com/docs) (dohodnuto v týmu 4. 11. 2026). Třídy pište přímo do `className`, `globals.css` obsahuje jen `@import "tailwindcss";`. Konfigurační soubor `tailwind.config` v4 nepotřebuje, vlastní hodnoty patří do bloku `@theme` v `globals.css`.
+Styling je v Tailwind CSS v4 (dohodnuto v týmu 4. 11. 2026). Layouty používají utility třídy v `className`; `globals.css` obsahuje barevné tokeny, několik sdílených komponentových tříd a přístupné animace. Vlastní hodnoty patří do bloku `@theme`, samostatný `tailwind.config` není potřeba.
 
 ### Brand
 
 - Barvy jsou v `@theme` v `globals.css`: `brand-50` až `brand-900` (zelená kurtu), `ball` (žlutozelená tenisového míčku, jen na akcenty a hlavní CTA), `ink-500` a `ink-900` pro text. Používejte je místo výchozí palety Tailwindu (`text-brand-900`, `bg-ball`…).
-- Písma: `font-display` (Bricolage Grotesque) na nadpisy, `font-sans` (Inter) na text. Načítá je `next/font` v `layout.tsx`.
+- Písma: `font-display` (Bricolage Grotesque) na nadpisy, `font-sans` (Inter) na text. Jsou self-hostovaná v `public/fonts` včetně češtiny a licencí; načítá je `fonts.css` s `font-display: swap`.
 - Logo: `<Logo />` (značka + název, odkaz na úvod) a `<LogoMark />` (jen značka) v `src/components/Logo.tsx`, favicon je `src/app/icon.svg`.
-- Hlavička (`SiteHeader`) a patička (`SiteFooter`) jsou v root layoutu. Přihlášení a avatar patří do pravé části hlavičky.
+- Hlavička (`SiteHeader`) a patička (`SiteFooter`) jsou v root layoutu. V pravé části hlavičky je tlačítko „Přihlásit se“ (odkaz na `/login`, zobrazí se jen nepřihlášenému). Stránku `/login` a avatar přihlášeného uživatele doplní úkol FE přihlášení.
+
+Podklady značky, marketingové texty a zadání pro AI video jsou v [`docs/brand`](../docs/brand/README.md). Hero obsahuje tiché nekonečné video na pozadí s pauzou, statickým fallbackem a respektem k reduced motion / save-data. Video `public/media/court-loop.mp4` je AI záběr tenistky (720p, zrychleno na 1,25×, 3,5 s), konec je prolnutý se začátkem, aby smyčka nenaskočila. Plakát před spuštěním videa je jeho první snímek `public/images/hero-poster.webp`. Rezervace na úvodní stránce je jasně označená frontendová ukázka bez odesílání dat.
 
 ## Ochrana stránek podle role
 

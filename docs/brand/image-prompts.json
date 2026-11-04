@@ -1,0 +1,17 @@
+{
+  "generator": "Built-in image_gen",
+  "assets": [
+    {
+      "key": "padel",
+      "prompt": "Use case: ads-marketing. Create a premium photographic sports campaign image, landscape 3:2, for a Czech recreational sports booking brand. Low courtside angle of two adult amateur friends playing doubles padel inside a real outdoor glass padel court in central Europe on a sunny late afternoon. Foreground: young adult man in plain forest green t-shirt and chalk white shorts seen from behind at left, holding correct perforated solid padel racket. One other player visible across net. Dark green playing surface, white regulation lines, glass walls with black slim steel frames, natural soft trees outside. Candid sporting action, elegant and realistic, editorial 35mm sports photography with tactile analog grain, beautiful light and long shadows. Palette forest green, off-white, lime tennis ball; no bright blue court. No text, no UI, no logos, no watermark. Highly believable people and correct padel rackets."
+    },
+    {
+      "key": "community",
+      "prompt": "Use case: ads-marketing. Asset type sports-booking brand editorial photograph. Wide landscape 3:2. Beautiful authentic close medium candid sports photograph of three adult friends after playing tennis on a green hardcourt in a central European local tennis club. A laughing woman and two men in simple off-white and forest green sports clothing leaning over the net talking, holding tennis rackets. Frame from waist up, faces relaxed, no influencer posing, lived-in outdoor club, softly blurred trees and court fence. Golden late afternoon sun from side creating skin highlights and film shadows. Premium sports magazine photograph, 35mm, tactile film grain, real amateur sports joy and human connection, muted greens and chalk whites. No text, no brands, no logos, no watermarks. Composition friends clustered on right and center, left space natural darker foliage. It must feel like a real memory of playing sport after work."
+    },
+    {
+      "key": "badminton",
+      "prompt": "Use case: ads-marketing. Asset type premium athletic editorial still life photograph, landscape 3:2. Close up of a real white feather badminton shuttlecock lying beside a dark graphite badminton racket on a dark forest green indoor badminton court. Beautiful stripe of warm natural window light diagonally crossing the white court sideline, deep shadow, tactile green sports surface, racket strings very detailed with no distortion. The shuttlecock feathers well formed and authentic, neither oversized nor decorative. Art-directed sports campaign photography, atmospheric and minimal, film grain, strong graphic crop. Palette deep forest green, off-white, pale yellow light. No text, no logos, no people, no watermark."
+    }
+  ]
+}

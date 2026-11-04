@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "next": "15.5.28",
     "react": "19.1.0",
     "react-dom": "19.1.0"
@@ -21,7 +22,9 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.28",
+    "fontkit": "^2.0.4",
     "tailwindcss": "^4.3.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wawoff2": "^2.0.1"
   }
 }

@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
+}
+
+@theme {
+  --color-brand-50: #eefbf3;
+  --color-brand-100: #d5f4e0;
+  --color-brand-200: #aee8c5;
+  --color-brand-500: #1f9d5c;
+  --color-brand-600: #15804a;
+  --color-brand-700: #10663c;
+  --color-brand-900: #0b3d2e;
+  --color-ball: #c8f24a;
+  --color-ink-500: #5b6b63;
+  --color-ink-900: #10201a;
+}

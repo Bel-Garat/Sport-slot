@@ -1,35 +1,19 @@
 import Link from "next/link";
 
-export function LogoMark({ className = "size-8" }: { className?: string }) {
+export function LogoMark({ className = "size-9" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
-      <rect width="32" height="32" rx="8" fill="var(--color-brand-900)" />
-      <rect
-        x="7"
-        y="7"
-        width="18"
-        height="18"
-        rx="2"
-        fill="none"
-        stroke="white"
-        strokeWidth="2"
-      />
-      <path d="M16 7v18" stroke="white" strokeWidth="2" />
-      <circle cx="21.5" cy="12" r="3.5" fill="var(--color-ball)" />
+    <svg viewBox="0 0 48 48" className={className} fill="currentColor" aria-hidden="true">
+      <path d="M39 8H22C12.06 8 4 16.06 4 26h12a6 6 0 0 1 6-6h9L39 8Z" />
+      <path d="M9 40h17c9.94 0 18-8.06 18-18H32a6 6 0 0 1-6 6h-9L9 40Z" />
     </svg>
   );
 }
 
-export function Logo() {
+export function Logo({ className = "" }: { className?: string }) {
   return (
-    <Link
-      href="/"
-      className="inline-flex items-center gap-2 rounded-md font-display text-xl font-bold tracking-tight text-brand-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600"
-    >
+    <Link href="/" aria-label="SportSlot, úvodní stránka" className={`inline-flex shrink-0 items-center gap-2.5 rounded-sm font-display text-[27px] leading-none font-bold tracking-[-1.4px] ${className}`}>
       <LogoMark />
-      <span>
-        Sport<span className="text-brand-600">Slot</span>
-      </span>
+      <span>sportslot<span className="text-brand-600">.</span></span>
     </Link>
   );
 }

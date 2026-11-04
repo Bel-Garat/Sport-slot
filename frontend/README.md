@@ -9,7 +9,7 @@ npm run dev:frontend # http://localhost:3000
 ```
 
 Adresu API gateway čte aplikace z `NEXT_PUBLIC_API_URL` (viz `.env.example`).
-Styling zatím není zvolený – čeká na týmovou dohodu.
+Styling je v [Tailwind CSS v4](https://tailwindcss.com/docs) (dohodnuto v týmu 4. 11. 2026). Třídy pište přímo do `className`, `globals.css` obsahuje jen `@import "tailwindcss";`. Konfigurační soubor `tailwind.config` v4 nepotřebuje, vlastní hodnoty patří do bloku `@theme` v `globals.css`.
 
 ## Ochrana stránek podle role
 

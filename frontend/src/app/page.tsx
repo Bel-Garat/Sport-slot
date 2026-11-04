@@ -27,7 +27,7 @@ export default function Home() {
           <HeroMedia />
           <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(8,31,21,.82)_0%,rgba(8,31,21,.48)_48%,rgba(8,31,21,.03)_100%)]" />
           <div className="hero-copy max-w-[880px] px-6 pt-14 pb-30 sm:px-10 md:px-16 md:pt-12 md:pb-24">
-            <p className="mb-7 text-xs font-semibold tracking-[.18em] uppercase text-white/85">Tvůj čas. Tvoje hra.</p>
+            <p className="mb-7 inline-flex rounded-full bg-black/30 px-4 py-2 text-sm font-semibold tracking-[.16em] uppercase text-white backdrop-blur-sm [text-shadow:0_1px_8px_rgba(0,0,0,.45)] sm:text-base">Tvůj čas. Tvoje hra.</p>
             <h1 id="hero-title" className="max-w-[800px] font-display text-[clamp(2.7rem,6.4vw,5.75rem)] leading-[1.05] font-semibold tracking-[-.055em]">Méně domlouvání.<br /><span className="text-ball">Více hraní.</span></h1>
             <p className="mt-7 max-w-80 text-base leading-relaxed text-white/85 sm:max-w-96 sm:text-lg">Najdi svůj sport, vyber si čas a vyraz.<br className="hidden sm:block" /> Na kurt patří hra. Ne domlouvání.</p>
             <Link href="#sporty" className="button button-primary hero-cta mt-8">Najdi svůj sport <ArrowUpRight size={21} aria-hidden="true" /></Link>

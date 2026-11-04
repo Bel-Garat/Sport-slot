@@ -8,7 +8,7 @@ const publicDir = path.join(root, 'frontend/public');
 const out = path.join(publicDir, 'brand');
 const families = {};
 const variations = new Map();
-const mark = '<path d="M30 11H15A13 13 0 0 0 15 37L18.5 31.5H15A7.5 7.5 0 0 1 15 16.5H26.5L30 11ZM18 37H33A13 13 0 0 0 33 11L29.5 16.5H33A7.5 7.5 0 0 1 33 31.5H21.5L18 37Z"/>';
+const mark = '<path d="M41.07 13.81A13 13 0 0 0 33 11H15A13 13 0 0 0 4.81 32.07L8.74 28.14A7.5 7.5 0 0 1 15 16.5H33A7.5 7.5 0 0 1 37.14 17.74ZM6.93 34.19A13 13 0 0 0 15 37H33A13 13 0 0 0 43.19 15.93L39.26 19.86A7.5 7.5 0 0 1 33 31.5H15A7.5 7.5 0 0 1 10.86 30.26Z"/>';
 function textPaths(text, x, y, size, fill, weight = 600, family = 'bricolage-grotesque', tracking = -0.035) {
   let cursor = x;
   const result = [];

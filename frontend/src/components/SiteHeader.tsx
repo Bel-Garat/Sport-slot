@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, List, SignIn, X } from "@phosphor-icons/react";
+import { ArrowUpRight, List, User, X } from "@phosphor-icons/react";
 import { Logo } from "@/components/Logo";
 import { loginPath, useAuth } from "@/lib/auth";
 
@@ -31,9 +31,7 @@ export function SiteHeader() {
       data-scrolled={scrolled}
       className="sticky top-0 z-30 border-b border-transparent bg-page/95 backdrop-blur-md transition-[border-color,box-shadow] duration-300 data-[scrolled=true]:border-line/70 data-[scrolled=true]:shadow-[0_8px_30px_-12px_rgba(23,59,43,.25)]"
     >
-      <div
-        className={`mx-auto flex max-w-[1440px] items-center justify-between gap-5 px-5 transition-[height] duration-300 md:px-10 ${scrolled ? "h-16" : "h-20 md:h-22"}`}
-      >
+      <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between gap-5 px-5 md:h-22 md:px-10">
         <Logo className="transition-transform duration-300 hover:-rotate-2" />
         <nav
           aria-label="Hlavní navigace"
@@ -49,13 +47,9 @@ export function SiteHeader() {
           {showLogin && (
             <Link
               href={loginPath}
-              className="button button-dark group hidden sm:inline-flex"
+              className="button button-dark group hidden gap-3 pl-2 sm:inline-flex"
             >
-              <SignIn
-                size={18}
-                aria-hidden="true"
-                className="transition-transform duration-300 group-hover:translate-x-0.5"
-              />
+              <SignInBadge />
               Přihlásit se
             </Link>
           )}
@@ -75,7 +69,6 @@ export function SiteHeader() {
           </button>
         </div>
       </div>
-      <div className="scroll-progress" aria-hidden="true" />
       <nav
         id="mobile-navigation"
         aria-label="Mobilní navigace"
@@ -100,13 +93,24 @@ export function SiteHeader() {
           <Link
             href={loginPath}
             onClick={() => setOpen(false)}
-            className="button button-dark mt-3 w-full sm:hidden"
+            className="button button-dark group mt-3 w-full gap-3 sm:hidden"
           >
-            <SignIn size={18} aria-hidden="true" />
+            <SignInBadge />
             Přihlásit se
           </Link>
         )}
       </nav>
     </header>
+  );
+}
+
+function SignInBadge() {
+  return (
+    <span
+      aria-hidden="true"
+      className="flex size-8 items-center justify-center rounded-full bg-ball text-brand-900 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
+    >
+      <User size={16} weight="bold" />
+    </span>
   );
 }

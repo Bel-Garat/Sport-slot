@@ -8,7 +8,7 @@ Značka pro lidi, kteří chtějí dostat sport zpátky do svého týdne.
 
 ## Vizuální systém
 
-Symbol tvoří tři dráhy se zaobleným startem a šikmým koncem, každá kratší než předchozí: pohyb, rychlost a cesta ke hře. Záměrně nejde o písmeno S, aby se značka nepletla s jinými sportovními aplikacemi. Používejte dodané SVG, nepřekreslujte symbol podle generovaných mockupů.
+Symbol tvoří tři vodorovné dráhy se šikmými konci: horní a dolní se stáčejí do oblouku, prostřední vede rovně. Dohromady naznačují S, ale jsou stavěné vodorovně a geometricky, aby se značka nepletla se šikmými „swoosh“ symboly jiných sportovních aplikací. Používejte dodané SVG, nepřekreslujte symbol podle generovaných mockupů.
 
 | Role | Barva |
 | --- | --- |

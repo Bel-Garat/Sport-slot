@@ -8,7 +8,7 @@ const publicDir = path.join(root, 'frontend/public');
 const out = path.join(publicDir, 'brand');
 const families = {};
 const variations = new Map();
-const mark = '<path d="M8.5 5H44L38 14H8.5A4.5 4.5 0 0 1 8.5 5ZM8.5 19.5H37L31 28.5H8.5A4.5 4.5 0 0 1 8.5 19.5ZM8.5 34H30L24 43H8.5A4.5 4.5 0 0 1 8.5 34Z"/>';
+const mark = '<path d="M40 5H20C11.72 5 5 11.72 5 20h7.5a7.5 7.5 0 0 1 7.5-7.5h15L40 5ZM17.25 20.5H38L33.5 27.5H17.25A3.5 3.5 0 0 1 17.25 20.5ZM8 43H28c8.28 0 15-6.72 15-15h-7.5a7.5 7.5 0 0 1-7.5 7.5H13L8 43Z"/>';
 function textPaths(text, x, y, size, fill, weight = 600, family = 'bricolage-grotesque', tracking = -0.035) {
   let cursor = x;
   const result = [];
@@ -44,7 +44,7 @@ async function main() {
   for (const [name,color] of Object.entries({ forest:'#173b2b', chalk:'#f7f9f4', lime:'#d2f34c' })) {
     const symbol = svg(48,48,`<g fill="${color}">${mark}</g>`);
     fs.writeFileSync(path.join(out,`sportslot-symbol-${name}.svg`),symbol);
-    const wordmark=svg(416,96,logo(8,8,80,color));
+    const wordmark=svg(436,96,logo(8,8,80,color));
     fs.writeFileSync(path.join(out,`sportslot-logo-${name}.svg`),wordmark);
     await sharp(Buffer.from(wordmark)).resize(1664).png().toFile(path.join(out,`sportslot-logo-${name}.png`));
   }
@@ -63,7 +63,7 @@ async function main() {
   await sharp(Buffer.from(share)).jpeg({quality:90}).toFile(path.join(root,'frontend/src/app/opengraph-image.jpg'));
   await sharp(Buffer.from(share)).jpeg({quality:90}).toFile(path.join(out,'sportslot-social-landscape.jpg'));
   await sharp(Buffer.from(campaign(1080,1350,true))).jpeg({quality:90}).toFile(path.join(out,'sportslot-social-portrait.jpg'));
-  const board=svg(1600,1100,`<rect width="1600" height="1100" fill="#e6ebe2"/><rect x="32" y="32" width="960" height="410" rx="12" fill="#173b2b"/>${logo(112,166,112,'#f7f9f4')}${text('Méně domlouvání. Více hraní.',112,370,26,'#d2f34c',500,'inter',0)}<rect x="1016" y="32" width="552" height="410" rx="12" fill="#d2f34c"/><g transform="translate(1150 84) scale(6)" fill="#173b2b">${mark}</g><rect x="32" y="466" width="750" height="340" rx="12" fill="#f7f9f4"/>${text('Tvůj čas.',76,595,78,'#173b2b')}${text('Tvoje hra.',76,684,78,'#173b2b')}${text('Bricolage Grotesque + Inter',76,758,22,'#5a685f',400,'inter',0)}<rect x="806" y="466" width="762" height="340" rx="12" fill="#173b2b"/>${text('Najdi místo. Udělej si čas. Hraj.',850,544,28,'#f7f9f4',500,'inter',-.025)}<rect x="850" y="590" width="220" height="144" rx="8" fill="#d2f34c"/><rect x="1086" y="590" width="220" height="144" rx="8" fill="#f7f9f4"/><rect x="1322" y="590" width="200" height="144" rx="8" fill="#5a685f"/>${text('#D2F34C',870,705,20,'#173b2b',500,'inter',0)}${text('#F7F9F4',1106,705,20,'#173b2b',500,'inter',0)}${text('#5A685F',1342,705,20,'#f7f9f4',500,'inter',0)}<rect x="32" y="830" width="1536" height="238" rx="12" fill="#f7f9f4"/>${logo(80,900,88,'#173b2b')}${text('Tři dráhy. Jeden směr: hra.',800,930,32,'#173b2b')}${text('Značka pro radost ze hry.',800,982,24,'#5a685f',400,'inter',0)}`);
+  const board=svg(1600,1100,`<rect width="1600" height="1100" fill="#e6ebe2"/><rect x="32" y="32" width="960" height="410" rx="12" fill="#173b2b"/>${logo(112,166,112,'#f7f9f4')}${text('Méně domlouvání. Více hraní.',112,370,26,'#d2f34c',500,'inter',0)}<rect x="1016" y="32" width="552" height="410" rx="12" fill="#d2f34c"/><g transform="translate(1150 84) scale(6)" fill="#173b2b">${mark}</g><rect x="32" y="466" width="750" height="340" rx="12" fill="#f7f9f4"/>${text('Tvůj čas.',76,595,78,'#173b2b')}${text('Tvoje hra.',76,684,78,'#173b2b')}${text('Bricolage Grotesque + Inter',76,758,22,'#5a685f',400,'inter',0)}<rect x="806" y="466" width="762" height="340" rx="12" fill="#173b2b"/>${text('Najdi místo. Udělej si čas. Hraj.',850,544,28,'#f7f9f4',500,'inter',-.025)}<rect x="850" y="590" width="220" height="144" rx="8" fill="#d2f34c"/><rect x="1086" y="590" width="220" height="144" rx="8" fill="#f7f9f4"/><rect x="1322" y="590" width="200" height="144" rx="8" fill="#5a685f"/>${text('#D2F34C',870,705,20,'#173b2b',500,'inter',0)}${text('#F7F9F4',1106,705,20,'#173b2b',500,'inter',0)}${text('#5A685F',1342,705,20,'#f7f9f4',500,'inter',0)}<rect x="32" y="830" width="1536" height="238" rx="12" fill="#f7f9f4"/>${logo(80,900,88,'#173b2b')}${text('Tři dráhy. Jeden volný slot.',800,930,32,'#173b2b')}${text('Značka pro radost ze hry.',800,982,24,'#5a685f',400,'inter',0)}`);
   fs.writeFileSync(path.join(out,'sportslot-identity.svg'),board);
   await sharp(Buffer.from(board)).png().toFile(path.join(out,'sportslot-identity.png'));
   console.log('Exported SVG / transparent PNG logos, avatar, social images and identity board.');

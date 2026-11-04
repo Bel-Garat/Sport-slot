@@ -27,7 +27,7 @@ export function RequireRole({
   if (loading || !user) {
     return (
       <main className="mx-auto max-w-240 px-4 py-12">
-        <p>Načítání…</p>
+        <p className="text-ink-500">Načítání…</p>
       </main>
     );
   }

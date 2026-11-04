@@ -11,6 +11,13 @@ npm run dev:frontend # http://localhost:3000
 Adresu API gateway čte aplikace z `NEXT_PUBLIC_API_URL` (viz `.env.example`).
 Styling je v [Tailwind CSS v4](https://tailwindcss.com/docs) (dohodnuto v týmu 4. 11. 2026). Třídy pište přímo do `className`, `globals.css` obsahuje jen `@import "tailwindcss";`. Konfigurační soubor `tailwind.config` v4 nepotřebuje, vlastní hodnoty patří do bloku `@theme` v `globals.css`.
 
+### Brand
+
+- Barvy jsou v `@theme` v `globals.css`: `brand-50` až `brand-900` (zelená kurtu), `ball` (žlutozelená tenisového míčku, jen na akcenty a hlavní CTA), `ink-500` a `ink-900` pro text. Používejte je místo výchozí palety Tailwindu (`text-brand-900`, `bg-ball`…).
+- Písma: `font-display` (Bricolage Grotesque) na nadpisy, `font-sans` (Inter) na text. Načítá je `next/font` v `layout.tsx`.
+- Logo: `<Logo />` (značka + název, odkaz na úvod) a `<LogoMark />` (jen značka) v `src/components/Logo.tsx`, favicon je `src/app/icon.svg`.
+- Hlavička (`SiteHeader`) a patička (`SiteFooter`) jsou v root layoutu. Přihlášení a avatar patří do pravé části hlavičky.
+
 ## Ochrana stránek podle role
 
 Stránku chráníte obalením obsahu komponentou `RequireRole`:

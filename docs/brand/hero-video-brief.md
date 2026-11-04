@@ -2,7 +2,7 @@
 
 ## Stav
 
-Frontend je připravený. Skutečný pohyb hráčky zatím není vygenerovaný. Aktuální MP4 je kamerový pohyb nad statickou AI fotografií, nikoliv video tenisového úderu.
+Hotovo 4. 11. 2026: `court-loop.mp4` je vygenerovaný AI záběr tenistky shora (5 s, 1280 × 720). Pro plynulou smyčku je posledních 0,6 s prolnuto se začátkem (výsledek 4,5 s). Plakát `frontend/public/images/hero-poster.webp` je první snímek smyčky.
 
 ## Podklad
 

@@ -50,8 +50,8 @@ export function HeroMedia() {
   }
 
   return <>
-    <Image src="/images/tennis-hero.webp" alt="Tenistka na zeleném kurtu v odpoledním slunci" fill priority sizes="100vw" className="hero-photo -z-20 object-cover object-[84%_center] md:object-center" />
-    <video ref={video} muted loop playsInline preload="none" aria-hidden="true" onPlaying={() => { setPlaying(true); setReady(true); }} onPause={() => setPlaying(false)} onError={() => { setReady(false); setPlaying(false); }} className={`pointer-events-none absolute inset-0 -z-20 size-full object-cover object-[84%_center] transition-opacity duration-700 md:object-center ${ready ? "opacity-100" : "opacity-0"}`} />
+    <Image src="/images/hero-poster.webp" alt="Tenistka na zeleném kurtu v odpoledním slunci, pohled shora" fill priority sizes="100vw" className="hero-photo -z-20 object-cover object-[77%_center] md:object-center" />
+    <video ref={video} muted loop playsInline preload="none" aria-hidden="true" onPlaying={() => { setPlaying(true); setReady(true); }} onPause={() => setPlaying(false)} onError={() => { setReady(false); setPlaying(false); }} className={`pointer-events-none absolute inset-0 -z-20 size-full object-cover object-[77%_center] transition-opacity duration-700 md:object-center ${ready ? "opacity-100" : "opacity-0"}`} />
     <div className="absolute right-6 bottom-6 sm:right-10 sm:bottom-8 md:right-12">
       <button type="button" onClick={toggle} aria-label={playing ? "Pozastavit video na pozadí" : "Přehrát video na pozadí"} aria-pressed={playing} className="group flex size-12 items-center justify-center rounded-full border border-white/45 bg-[#173b2b]/60 text-white backdrop-blur-sm transition-colors hover:bg-[#173b2b]/90 focus-visible:outline-white">
         {playing ? <Pause size={16} weight="fill" aria-hidden="true" /> : <Play size={16} weight="fill" aria-hidden="true" />}

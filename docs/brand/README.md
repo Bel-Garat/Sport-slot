@@ -41,7 +41,7 @@ Přesné vektorové exporty a sociální grafiky lze obnovit příkazem `node sc
 
 Čtyři původní AI fotografie jsou v `frontend/public/images`. Vznikly pomocí vestavěného generátoru obrázků, nikoliv stažením cizích fotografií. Nezobrazují nabídku skutečných partnerských sportovišť.
 
-`frontend/public/media/court-loop.mp4` je **dočasný desetisekundový kamerový pohyb nad AI fotografií**. Neobsahuje skutečně generovaný pohyb hráčky. Finální AI video s tenisovým úderem zatím není vygenerované: je potřeba připojený video generátor. Zadání je v `hero-video-brief.md`. Hotové video může nahradit tento soubor bez změny komponenty.
+`frontend/public/media/court-loop.mp4` je AI video tenistky shora (1280 × 720, smyčka 4,5 s s prolnutým koncem a začátkem). Plakát je jeho první snímek `frontend/public/images/hero-poster.webp`. Zadání a postup úpravy jsou v `hero-video-brief.md`. Nové video může soubor nahradit bez změny komponenty, plakát je pak potřeba vyměnit za jeho první snímek.
 
 Komponenta `HeroMedia` zajišťuje:
 

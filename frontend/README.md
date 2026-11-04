@@ -41,3 +41,21 @@ Stránka `/login` čte parametr `next` přes `useSearchParams()` (stránka musí
 Odhlášení zavolá odhlášení na backendu a pak `window.location.assign("/")`. Samotné `setUser(null)` na chráněné stránce by přesměrovalo na přihlášení s `next` na tuto stránku.
 
 `RequireRole` je jen UX, ne bezpečnostní hranice: obsah serverových komponent uvnitř je i tak v HTML stránky. Citlivá data načítejte až v klientské komponentě po přihlášení – oprávnění vždy ověřuje backend.
+
+## Založení sportoviště
+
+Formulář je na `/venues/new` (jen role `MANAGER`). Volá `createVenue()` z `@/lib/api`, tedy `POST /api/venue/create`. S nastaveným `NEXT_PUBLIC_MOCK_ROLE` místo API použije mock: sportoviště drží v paměti prohlížeče a druhé se stejným názvem, adresou a městem odmítne chybou `venue/create/venueAlreadyExists` (409).
+
+Předpokládaný dtoIn (dokud není hotová dokumentace API v Command listu):
+
+```json
+{
+  "name": "Sportcentrum Lužánky",
+  "address": "Lidická 1",
+  "city": "Brno",
+  "description": "…",
+  "openingHoursList": [{ "dayOfWeek": 1, "openTime": "08:00", "closeTime": "22:00" }]
+}
+```
+
+`dayOfWeek` je 1 = pondělí až 7 = neděle, zavřené dny v seznamu nejsou.

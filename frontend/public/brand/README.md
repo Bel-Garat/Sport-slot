@@ -8,7 +8,7 @@ Značka pro lidi, kteří chtějí dostat sport zpátky do svého týdne.
 
 ## Vizuální systém
 
-Symbol tvoří dvě protilehlé dráhy. Dohromady vytvářejí písmeno S; mezera uprostřed odkazuje na volný slot. Používejte dodané SVG, nepřekreslujte symbol podle generovaných mockupů.
+Symbol je tenisový kurt shora (čáry jsou vynechané mezery v ploše) a nad ním míček ve hře: kurt je váš slot, míček hra, která na něm začne. Záměrně nepoužívá písmeno S, aby se nepletl s jinými sportovními značkami. Používejte dodané SVG, nepřekreslujte symbol podle generovaných mockupů.
 
 | Role | Barva |
 | --- | --- |
@@ -30,7 +30,6 @@ Všechny výstupy jsou v `frontend/public/brand`:
 - `sportslot-symbol-{forest,chalk,lime}.svg`: samostatný symbol.
 - `sportslot-avatar.{svg,png}`: profilový obrázek.
 - `sportslot-identity.{svg,png}`: přesný přehled identity.
-- `sportslot-brand-applications.webp`: AI vizualizace použití značky na sportovních předmětech; koncepty, ne fotografie vyrobeného zboží.
 - `sportslot-social-landscape.jpg`: 1200 × 630 pro sdílení.
 - `sportslot-social-portrait.jpg`: 1080 × 1350 pro feed.
 - `sportslot-brand-kit.zip`: balíček log, přehledu identity, vizualizací, sociálních grafik a tohoto návodu.

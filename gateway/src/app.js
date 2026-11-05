@@ -1,4 +1,5 @@
 import express from 'express'
+import { errorHandler, notFound } from '@sportslot/api-format'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import { routes } from './routes.js'
 
@@ -17,8 +18,7 @@ export function createApp(serviceUrls) {
 			}),
 		)
 	}
-	app.use((_req, res) => {
-		res.status(404).json({ error: 'Not found' })
-	})
+	app.use(notFound)
+	app.use(errorHandler)
 	return app
 }

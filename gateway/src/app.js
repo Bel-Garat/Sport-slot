@@ -1,9 +1,9 @@
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
-import { errorHandler, notFound } from "@sportslot/api-format";
 import { routes } from "./routes.js";
 import { createAuthMiddleware } from "./middleware/auth.js";
 import { requireRole } from "./middleware/roles.js";
+import { AppError, errorHandler, notFound } from "@sportslot/api-format";
 
 const PUBLIC_ENDPOINTS = new Set([
   "POST /api/auth/googleCallback",
@@ -51,7 +51,7 @@ export function createApp(
 
     if (req.method === "OPTIONS" && req.path.startsWith("/api/")) {
       if (!frontendOrigin || origin !== frontendOrigin) {
-        return res.status(403).end();
+        return next(new AppError("notAuthorized", "Nemáte oprávnění.", 403));
       }
 
       return res.status(204).end();
@@ -82,11 +82,13 @@ export function createApp(
     delete req.headers["x-gateway-secret"];
 
     if (typeof gatewaySecret !== "string" || gatewaySecret.length < 32) {
-      return res.status(503).json({
-        code: "gatewayUnavailable",
-        message: "Gateway authentication is not configured",
-        params: {},
-      });
+      return next(
+        new AppError(
+          "gatewayUnavailable",
+          "Ověření gateway není nakonfigurováno.",
+          503,
+        ),
+      );
     }
 
     if (PUBLIC_ENDPOINTS.has(endpoint)) {
@@ -94,14 +96,20 @@ export function createApp(
     }
 
     if (!authenticate) {
-      return res.status(503).json({
-        code: "authUnavailable",
-        message: "Authentication is not configured",
-        params: {},
-      });
+      return next(
+        new AppError(
+          "authUnavailable",
+          "Autentizace není nakonfigurována.",
+          503,
+        ),
+      );
     }
 
-    authenticate(req, res, () => {
+    authenticate(req, res, (error) => {
+      if (error) {
+        return next(error);
+      }
+
       if (MANAGER_ENDPOINTS.has(endpoint)) {
         return requireRole("MANAGER")(req, res, next);
       }

@@ -1,4 +1,4 @@
-
+import { notAuthenticated } from '@sportslot/api-format'
 import { jwtVerify } from 'jose'
 
 const ALLOWED_ROLES = ['PLAYER', 'MANAGER', 'ADMIN']
@@ -16,11 +16,7 @@ export function createAuthMiddleware(jwtSecret) {
     const authorization = req.get('authorization')
 
     if (!authorization?.startsWith('Bearer ')) {
-      return res.status(401).json({
-        code: 'notAuthenticated',
-        message: 'Missing or invalid authorization header',
-        params: {},
-      })
+      return next(notAuthenticated())
     }
 
     const token = authorization.slice(7)
@@ -56,11 +52,7 @@ export function createAuthMiddleware(jwtSecret) {
 
       next()
     } catch {
-      return res.status(401).json({
-        code: 'notAuthenticated',
-        message: 'Invalid or expired token',
-        params: {},
-      })
+      return next(notAuthenticated())
     }
   }
 }

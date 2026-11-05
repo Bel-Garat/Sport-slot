@@ -5,6 +5,10 @@ import request from 'supertest'
 import { createApp } from '../src/app.js'
 import { serviceUrlsFromEnv } from '../src/routes.js'
 
+const TEST_CONFIG = {
+  gatewaySecret: 'test-gateway-secret-at-least-32-characters',
+}
+
 let venueService
 let serviceUrls
 
@@ -20,18 +24,18 @@ before(async () => {
 after(() => venueService.close())
 
 test('GET /health reports the gateway as up', async () => {
-	const response = await request(createApp(serviceUrls)).get('/health')
+	const response = await request(createApp(serviceUrls, TEST_CONFIG)).get('/health')
 	assert.equal(response.status, 200)
 	assert.deepEqual(response.body, { status: 'ok', service: 'gateway' })
 })
 
 test('forwards /api/venue requests to the venue service without the /api prefix', async () => {
-	const response = await request(createApp(serviceUrls)).get('/api/venue/list')
+	const response = await request(createApp(serviceUrls, TEST_CONFIG)).get('/api/venue/list')
 	assert.equal(response.status, 200)
 	assert.deepEqual(response.body, { handledBy: 'venue-service' })
 })
 
 test('answers 404 for paths no service owns', async () => {
-	const response = await request(createApp(serviceUrls)).get('/api/unknown')
+	const response = await request(createApp(serviceUrls, TEST_CONFIG)).get('/api/unknown')
 	assert.equal(response.status, 404)
 })

@@ -1,4 +1,5 @@
 import express from 'express'
+import { errorHandler, notFound } from '@sportslot/api-format'
 
 export function createApp() {
 	const app = express()
@@ -6,5 +7,7 @@ export function createApp() {
 	app.get('/health', (_req, res) => {
 		res.json({ status: 'ok', service: 'venue-service' })
 	})
+	app.use(notFound)
+	app.use(errorHandler)
 	return app
 }

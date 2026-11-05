@@ -165,19 +165,33 @@ This example assumes the default local PostgreSQL setup on macOS. It must not be
 
 ## 7. Seed data
 
-**Seed implementation is planned for a separate backend integration task.**
+`db/prisma/seed.sql` loads the example venue from **Business Requests → Context**:
 
-Because SportSlot uses one shared Supabase development database, each developer must not independently seed it.
+| What | Fixed ID | Data |
+|---|---|---|
+| Manager Samir Obeidat | `00000000-0000-4000-8000-000000000001` | roles `PLAYER`, `MANAGER`; placeholder Google ID and e-mail `samir.obeidat@sportslot.test` |
+| Venue Sportcentrum | `00000000-0000-4000-8000-000000000101` | Sportovní 1 (placeholder address), Praha |
+| Opening hours | – | Mon–Sun (1–7), 7:00–22:00 |
+| Hřiště 1 | `00000000-0000-4000-8000-000000000201` | fotbal; 300 Kč/h 7–16, 500 Kč/h 16–22 |
+| Hřiště 2 | `00000000-0000-4000-8000-000000000202` | `tenis, nohejbal, streetbal`; 100 / 200 Kč/h |
+| Hřiště 3 | `00000000-0000-4000-8000-000000000203` | volejbal; 200 / 400 Kč/h |
+| Hřiště 4 | `00000000-0000-4000-8000-000000000204` | basketbal; 200 / 400 Kč/h |
 
-The planned approach is:
+Use these IDs in tests, mocks and test headers (e.g. `x-user-id` of the manager). Hřiště 2 stores its three sports comma-separated, because `courts.sport` holds one value; search must match a sport as a whole word in that list.
 
-- One authorized maintainer runs the shared development seed.
-- The seed must be idempotent to prevent duplicate records.
-- Example data may include venues, courts, opening hours, and price rules.
-- Developers can seed their own isolated local databases independently.
-- Seeding must never run automatically during migration deployment or application startup.
+Rules:
 
-No seed script has been implemented yet.
+- **Only Alexandr runs the seed on the shared Supabase database.** Developers may seed their own local databases freely.
+- The seed is idempotent: it only inserts missing rows and never updates or deletes. Changing a value in the file does not change an already seeded row.
+- It runs in one transaction; if any insert fails, nothing is saved.
+- It never runs automatically (it is not wired into `prisma migrate`).
+
+Run it (from the repository root). First check that `DATABASE_URL` in `.env` points to the intended database:
+
+```bash
+npm exec --workspace @sportslot/db -- prisma migrate status
+npm run seed --workspace @sportslot/db
+```
 
 ## 8. Security and collaboration
 
@@ -201,12 +215,12 @@ Git branches do not create independent Supabase databases.
 - Database constraints and audit protection tested.
 - Initial migration successfully deployed through Prisma Migrate.
 - All nine tables verified in Supabase.
+- Idempotent development seed (`db/prisma/seed.sql`), tested locally against the initial migration.
 
 **Pending:**
 
 - Integrate Prisma Client with Express services.
 - Configure service-specific database permissions.
-- Implement an optional development seed.
 - Complete PR review and merge.
 
 The shared database schema is ready for backend integration.

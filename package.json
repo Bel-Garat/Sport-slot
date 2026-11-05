@@ -5,6 +5,7 @@
 		"frontend",
 		"gateway",
 		"services/*",
+		"packages/*",
 		"db"
 	],
 	"engines": {

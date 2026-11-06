@@ -106,9 +106,8 @@ Když `response.ok` je `false`, zobrazte `message` první položky v `uuAppError
 * **Tělo požadavku (JSON):** `courtId`, `dayOfWeek`, `startTime`, `endTime`, `pricePerHour`.
 
 ### `GET priceRule/listByCourt`
-**Popis:** Získání ceníku kurtu. Tento endpoint bude volat `reservation-service` pro výpočet výsledné ceny rezervace (US 7).
-* 
-## Auth – Google přihlášení (návrh API kontraktu)
+**Popis:** Získání ceníku kurtu. Tento endpoint bude volat `reservation-service` pro výpočet výsledné ceny rezervace (US 7). 
+## 4. Auth – Google přihlášení (návrh API kontraktu)
 
 ### POST /api/auth/googleCallback
 
@@ -144,7 +143,8 @@ Když `response.ok` je `false`, zobrazte `message` první položky v `uuAppError
 
 ---
 
-## User – Informace o přihlášeném uživateli (návrh API kontraktu)
+## 5. User – Informace o přihlášeném uživateli (návrh API kontraktu)
+
 
 ### GET /api/user/me
 

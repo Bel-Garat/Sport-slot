@@ -2,7 +2,10 @@ import express from "express";
 import { createCourtRouter } from "./routes/court.js";
 import { errorHandler, notFound } from "@sportslot/api-format";
 
-export function createApp({ db } = {}) {
+export function createApp({
+  db,
+  gatewaySecret = process.env.GATEWAY_SECRET,
+} = {}) {
   const app = express();
 
   app.locals.db = db;
@@ -16,8 +19,8 @@ export function createApp({ db } = {}) {
     });
   });
 
-  app.use("/court", createCourtRouter({ db }));
-  
+  app.use("/court", createCourtRouter({ db, gatewaySecret }));
+
   app.use(notFound);
   app.use(errorHandler);
 

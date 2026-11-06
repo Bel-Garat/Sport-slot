@@ -64,3 +64,22 @@ test("GET /court/list returns 400 for invalid venueId", async () => {
     "error",
   );
 });
+
+test("GET /court/list returns 404 for unknown venue", async () => {
+  const db = {
+    venue: {
+      findUnique: async () => null,
+    },
+  };
+
+  const response = await request(createApp({ db }))
+    .get("/court/list")
+    .query({ venueId: VENUE_ID });
+
+  assert.equal(response.status, 404);
+
+  assert.equal(
+    response.body.uuAppErrorMap["court/list/venueDoesNotExist"].type,
+    "error",
+  );
+});

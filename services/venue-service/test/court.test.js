@@ -34,3 +34,33 @@ test("GET /court/list returns courts for a venue", async () => {
   assert.equal(response.body.itemList.length, 1);
   assert.equal(response.body.itemList[0].id, COURT_ID);
 });
+
+test("GET /court/list returns 400 when venueId is missing", async () => {
+  const response = await request(createApp({ db: {} }))
+    .get("/court/list");
+
+  assert.equal(response.status, 400);
+
+  assert.equal(
+    response.body.uuAppErrorMap["court/list/invalidDtoIn"].type,
+    "error",
+  );
+
+  assert.ok(
+    response.body.uuAppErrorMap["court/list/invalidDtoIn"]
+      .paramMap.missingKeyMap.venueId,
+  );
+});
+
+test("GET /court/list returns 400 for invalid venueId", async () => {
+  const response = await request(createApp({ db: {} }))
+    .get("/court/list")
+    .query({ venueId: "not-a-valid-uuid" });
+
+  assert.equal(response.status, 400);
+
+  assert.equal(
+    response.body.uuAppErrorMap["court/list/invalidDtoIn"].type,
+    "error",
+  );
+});

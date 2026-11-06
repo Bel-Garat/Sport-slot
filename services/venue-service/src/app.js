@@ -1,4 +1,5 @@
 import express from "express";
+import { createCourtRouter } from "./routes/court.js";
 import { errorHandler, notFound } from "@sportslot/api-format";
 
 export function createApp({ db } = {}) {
@@ -15,6 +16,8 @@ export function createApp({ db } = {}) {
     });
   });
 
+  app.use("/court", createCourtRouter({ db }));
+  
   app.use(notFound);
   app.use(errorHandler);
 

@@ -12,9 +12,9 @@
 		"@sportslot/api-format": "*",
 		"express": "^5.1.0",
 		"http-proxy-middleware": "^3.0.5",
+		"jose": "^6.2.15",
 		"swagger-ui-express": "^5.0.1",
 		"yamljs": "^0.3.0"
-		"jose": "^6.2.15"
 	},
 	"devDependencies": {
 		"supertest": "^7.1.0"

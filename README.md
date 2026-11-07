@@ -80,3 +80,19 @@ V Site configuration → Environment variables nastavit a pak spustit nový depl
 
 ### Google přihlášení
 OAuth Client ID (projekt `sportslot-513614`) musí mít v Google Cloud Console → Credentials v **Authorized JavaScript origins** adresu frontendu (`https://sport-slot.netlify.app`) a pro lokální vývoj `http://localhost:3000`. Redirect URI ani client secret aplikace nepoužívá – frontend dostane ID token přímo od Google a backend ho ověří proti Client ID. Client secret do repozitáře nepatří.
+
+## Fotky sportovišť
+
+Fotky demo sportovišť v `frontend/public/images/venues/` jsou z [Unsplash](https://unsplash.com) pod [Unsplash License](https://unsplash.com/license) (volné použití i bez uvedení autora, autory přesto uvádíme):
+
+| Soubor | Autor |
+|---|---|
+| `tennis-clay.webp` | Maurits Bausenhart |
+| `tennis-blue.webp` | Gilley Aguilar |
+| `football.webp` | Izuddin Helmi Adnan |
+| `basketball-hall.webp` | Mattia Graziani |
+| `volleyball.webp` | Michele Feola |
+| `padel.webp` | Sergio Contreras |
+| `sports-hall.webp` | Dmitry Ant |
+| `badminton-hall.webp` | Palak Pitroda |
+| `sports-dome.webp` | Gabriele Romano |

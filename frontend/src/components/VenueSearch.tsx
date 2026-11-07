@@ -279,7 +279,7 @@ function ResultSkeleton() {
     <div aria-hidden="true" className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }, (_, index) => (
         <div key={index} className="overflow-hidden rounded-2xl border border-line">
-          <div className="aspect-[16/10] animate-pulse bg-surface" />
+          <div className="aspect-[16/9] animate-pulse bg-surface" />
           <div className="space-y-3 p-5">
             <div className="h-5 w-2/3 animate-pulse rounded bg-surface" />
             <div className="h-4 w-1/3 animate-pulse rounded bg-surface" />
@@ -370,19 +370,19 @@ function Pagination({
   if (pageCount <= 1) return null;
 
   return (
-    <nav aria-label="Stránkování" className="mt-10 flex items-center justify-between gap-4 border-t border-line pt-6">
+    <nav aria-label="Stránkování" className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6">
       {pageIndex > 0 ? (
-        <Link href={hrefFor(pageIndex - 1)} className="button button-outline gap-2">
+        <Link href={hrefFor(pageIndex - 1)} className="button button-outline gap-2 px-4">
           <ArrowLeft size={16} aria-hidden="true" /> Předchozí
         </Link>
       ) : (
         <span />
       )}
-      <span className="text-sm text-muted">
+      <span className="order-first w-full text-center text-sm text-muted sm:order-none sm:w-auto">
         Strana <strong className="text-foreground">{pageIndex + 1}</strong> z {pageCount}
       </span>
       {pageIndex + 1 < pageCount ? (
-        <Link href={hrefFor(pageIndex + 1)} className="button button-outline gap-2">
+        <Link href={hrefFor(pageIndex + 1)} className="button button-outline gap-2 px-4">
           Další <ArrowRight size={16} aria-hidden="true" />
         </Link>
       ) : (

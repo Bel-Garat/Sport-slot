@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import Link from "next/link";
-import { ArrowUpRight, List, SignOut, X } from "@phosphor-icons/react";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowUpRight, List, Plus, SignOut, X } from "@phosphor-icons/react";
 import { Logo } from "@/components/Logo";
-import { loginPath, logout, useAuth } from "@/lib/auth";
+import { Avatar, RoleBadges, UserMenu } from "@/components/UserMenu";
+import { loginHref, loginPath, logout, useAuth } from "@/lib/auth";
 
 const links = [
   { href: "/venues", label: "Sportoviště" },
@@ -14,11 +16,27 @@ const links = [
   { href: "/#pro-spravce", label: "Pro sportoviště" },
 ];
 
+function useLoginLink() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const href = loginHref(pathname);
+  const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+    event.preventDefault();
+    const { pathname: path, search, hash } = window.location;
+    router.push(loginHref(path + search + hash));
+  };
+  return { href, onClick };
+}
+
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user, loading } = useAuth();
-  const showLogin = !loading && !user;
+  const pathname = usePathname();
+  const loginLink = useLoginLink();
+  const onLoginPage = pathname === loginPath;
+  const showLogin = !loading && !user && !onLoginPage;
 
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 8);
@@ -26,6 +44,10 @@ export function SiteHeader() {
     window.addEventListener("scroll", update, { passive: true });
     return () => window.removeEventListener("scroll", update);
   }, []);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <header
@@ -45,23 +67,21 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
+          {loading && (
+            <span
+              aria-hidden="true"
+              className="hidden h-11 w-32 animate-pulse rounded-full bg-surface sm:block"
+            />
+          )}
           {user && (
-            <div className="hidden items-center gap-3 sm:flex">
-              <span className="max-w-48 truncate text-sm font-medium" title={user.email}>
-                {user.name}
-              </span>
-              <button
-                type="button"
-                onClick={logout}
-                className="button button-outline"
-              >
-                Odhlásit se <SignOut size={18} aria-hidden="true" />
-              </button>
+            <div className="hidden sm:block">
+              <UserMenu user={user} />
             </div>
           )}
           {showLogin && (
             <Link
-              href={loginPath}
+              href={loginLink.href}
+              onClick={loginLink.onClick}
               className="button button-dark hidden sm:inline-flex"
             >
               Přihlásit se
@@ -92,6 +112,20 @@ export function SiteHeader() {
           if (event.key === "Escape") setOpen(false);
         }}
       >
+        {user && (
+          <div className="mb-3 rounded-2xl bg-surface p-4 sm:hidden">
+            <div className="flex items-center gap-3">
+              <Avatar name={user.name} size="lg" />
+              <div className="min-w-0">
+                <p className="truncate font-semibold">{user.name}</p>
+                <p className="truncate text-xs text-muted">{user.email}</p>
+              </div>
+            </div>
+            <div className="mt-3">
+              <RoleBadges user={user} />
+            </div>
+          </div>
+        )}
         {links.map((link) => (
           <Link
             key={link.href}
@@ -103,19 +137,32 @@ export function SiteHeader() {
             <ArrowUpRight size={18} aria-hidden="true" />
           </Link>
         ))}
+        {user?.roles.includes("MANAGER") && (
+          <Link
+            href="/venues/new"
+            onClick={() => setOpen(false)}
+            className="flex min-h-12 items-center justify-between py-3 text-base font-medium sm:hidden"
+          >
+            Přidat sportoviště
+            <Plus size={18} aria-hidden="true" />
+          </Link>
+        )}
         {user && (
           <button
             type="button"
             onClick={logout}
             className="button button-outline mt-3 w-full sm:hidden"
           >
-            Odhlásit se ({user.name}) <SignOut size={18} aria-hidden="true" />
+            Odhlásit se <SignOut size={18} aria-hidden="true" />
           </button>
         )}
         {showLogin && (
           <Link
-            href={loginPath}
-            onClick={() => setOpen(false)}
+            href={loginLink.href}
+            onClick={(event) => {
+              setOpen(false);
+              loginLink.onClick(event);
+            }}
             className="button button-dark mt-3 w-full sm:hidden"
           >
             Přihlásit se

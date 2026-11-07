@@ -31,14 +31,15 @@ export function LoginDialog() {
     <dialog
       ref={dialogRef}
       aria-labelledby="login-dialog-title"
+      aria-describedby="login-dialog-description"
       onClose={closeLogin}
       onClick={(event) => {
         if (event.target === event.currentTarget) closeLogin();
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-[440px] rounded-3xl border border-line bg-page p-0 text-foreground shadow-[0_40px_120px_-40px_rgba(10,30,20,.7)] backdrop:bg-brand-900/55 backdrop:backdrop-blur-sm"
+      className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-[460px] overflow-y-auto rounded-3xl border border-line bg-page p-0 text-foreground shadow-[0_40px_120px_-40px_rgba(10,30,20,.7)] backdrop:bg-brand-900/55 backdrop:backdrop-blur-sm"
     >
       {loginOpen && (
-        <div className="relative p-7 sm:p-8">
+        <div className="relative p-6 sm:p-9">
           <button
             type="button"
             onClick={closeLogin}
@@ -47,12 +48,12 @@ export function LoginDialog() {
           >
             <X size={20} aria-hidden="true" />
           </button>
-          <LogoMark className="h-8 w-auto" />
-          <h2 id="login-dialog-title" className="mt-5 font-display text-[1.9rem] leading-tight font-semibold tracking-[-.035em]">
-            Přihlaste se do SportSlotu
+          <span className="flex size-12 items-center justify-center rounded-2xl bg-ball text-brand-900"><LogoMark className="size-9" /></span>
+          <h2 id="login-dialog-title" className="mt-6 max-w-72 font-display text-[2rem] leading-[1.12] font-semibold tracking-[-.04em]">
+            Přihlášení do SportSlotu
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted">
-            Pokračujte účtem Google. Pokud ho u nás používáte poprvé, účet vám rovnou založíme.
+          <p id="login-dialog-description" className="mt-3 text-sm leading-relaxed text-muted">
+            Jeden účet pro vaši další hru. Pokračujte přes Google, bez dalšího hesla.
           </p>
           <div className="mt-6">
             <SignInPanel reason={loginReason} onSignedIn={closeLogin} onBrowse={closeLogin} />

@@ -17,13 +17,13 @@ export function LoginPageCard() {
   }, [loading, user, nextPath, router]);
 
   return (
-    <div className="w-full max-w-[440px] rounded-3xl border border-line bg-page p-7 shadow-[0_40px_120px_-50px_rgba(10,30,20,.6)] sm:p-8">
-      <LogoMark className="h-8 w-auto" />
-      <h1 className="mt-5 font-display text-[1.9rem] leading-tight font-semibold tracking-[-.035em] text-foreground">
-        Přihlaste se do SportSlotu
+    <div className="w-full max-w-[460px] rounded-3xl border border-line bg-page p-6 shadow-[0_24px_70px_-40px_rgba(10,30,20,.35)] sm:p-9">
+      <span className="flex size-12 items-center justify-center rounded-2xl bg-ball text-brand-900"><LogoMark className="size-9" /></span>
+      <h1 className="mt-6 max-w-72 font-display text-[2rem] leading-[1.12] font-semibold tracking-[-.04em] text-foreground">
+        Přihlášení do SportSlotu
       </h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        Pokračujte účtem Google. Pokud ho u nás používáte poprvé, účet vám rovnou založíme.
+        Jeden účet pro vaši další hru. Pokračujte přes Google, bez dalšího hesla.
       </p>
       <div className="mt-6">
         {!loading && user ? (

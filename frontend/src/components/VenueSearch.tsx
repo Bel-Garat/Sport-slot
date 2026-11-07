@@ -8,6 +8,7 @@ import {
   ArrowClockwise,
   ArrowLeft,
   ArrowRight,
+  Check,
   MagnifyingGlass,
   MapPin,
   Plus,
@@ -26,7 +27,7 @@ type LoadState =
   | { status: "done"; list: VenueList };
 
 const fieldClass =
-  "h-12 w-full rounded-xl border border-line bg-page pr-3 pl-11 text-foreground placeholder:text-muted/70 transition focus:border-brand-500 focus:ring-3 focus:ring-brand-500/20 focus:outline-none";
+  "h-12 w-full rounded-xl border border-line bg-page pr-10 pl-11 text-base text-foreground placeholder:text-muted/70 transition focus:border-brand-500 focus:ring-3 focus:ring-brand-500/20 focus:outline-none";
 
 function pageIndexFrom(value: string | null): number {
   const number = Number(value);
@@ -42,7 +43,7 @@ function venuesLabel(count: number): string {
 export function VenueSearchSkeleton() {
   return (
     <div aria-hidden="true">
-      <div className="relative -mt-8 h-[132px] animate-pulse rounded-2xl border border-line bg-surface md:h-[118px]" />
+      <div className="h-[280px] animate-pulse rounded-2xl bg-surface md:h-[174px]" />
       <div className="mt-10 h-5 w-40 animate-pulse rounded bg-surface" />
       <ResultSkeleton />
     </div>
@@ -101,12 +102,12 @@ export function VenueSearch() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    router.push(hrefFor({ city: cityInput, sport: sportInput, pageIndex: 0 }));
+    router.push(hrefFor({ city: cityInput, sport: sportInput, pageIndex: 0 }), { scroll: false });
   }
 
   function toggleSport(value: string) {
     const nextSport = sport.toLocaleLowerCase("cs") === value ? "" : value;
-    router.push(hrefFor({ city, sport: nextSport, pageIndex: 0 }));
+    router.push(hrefFor({ city: cityInput, sport: nextSport, pageIndex: 0 }), { scroll: false });
   }
 
   const filtered = Boolean(city || sport);
@@ -116,37 +117,50 @@ export function VenueSearch() {
     <>
       <form
         role="search"
+        aria-label="Vyhledat sportoviště"
         onSubmit={handleSubmit}
-        className="relative -mt-8 rounded-2xl border border-line bg-page p-4 shadow-[0_18px_50px_-30px_rgba(23,59,43,.45)] md:p-5"
+        className="rounded-2xl border border-line bg-surface/60 p-4 md:p-6"
       >
-        <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
-          <label className="relative block">
-            <span className="sr-only">Město</span>
+        <div className="grid items-end gap-4 md:grid-cols-[1fr_1fr_auto]">
+          <div>
+            <label htmlFor="venue-city" className="mb-2 block text-sm font-semibold">Kde chcete hrát?</label>
+            <div className="relative">
             <MapPin size={20} aria-hidden="true" className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted" />
             <input
               className={fieldClass}
+              id="venue-city"
+              name="city"
               value={cityInput}
-              placeholder="Město, např. Praha"
+              placeholder="Město, třeba Praha"
               autoComplete="address-level2"
               onChange={(event) => setCityInput(event.target.value)}
             />
-          </label>
-          <label className="relative block">
-            <span className="sr-only">Sport</span>
+            {cityInput && <button type="button" aria-label="Vymazat město" onClick={() => { setCityInput(""); document.getElementById("venue-city")?.focus(); }} className="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-xl text-muted hover:text-foreground"><X size={16} aria-hidden="true" /></button>}
+            </div>
+          </div>
+          <div>
+            <label htmlFor="venue-sport" className="mb-2 block text-sm font-semibold">Co si zahrajete?</label>
+            <div className="relative">
             <TennisBall size={20} aria-hidden="true" className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted" />
             <input
               className={fieldClass}
+              id="venue-sport"
+              name="sport"
+              list="venue-sport-options"
               value={sportInput}
-              placeholder="Sport, např. tenis"
+              placeholder="Všechny sporty"
               onChange={(event) => setSportInput(event.target.value)}
             />
-          </label>
+            <datalist id="venue-sport-options">{popularSports.map((value) => <option key={value} value={capitalize(value)} />)}</datalist>
+            {sportInput && <button type="button" aria-label="Vymazat sport" onClick={() => { setSportInput(""); document.getElementById("venue-sport")?.focus(); }} className="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-xl text-muted hover:text-foreground"><X size={16} aria-hidden="true" /></button>}
+            </div>
+          </div>
           <button type="submit" className="button button-primary h-12 min-h-12 gap-2.5">
-            <MagnifyingGlass size={18} aria-hidden="true" /> Hledat
+            <MagnifyingGlass size={18} aria-hidden="true" /> Najít sportoviště
           </button>
         </div>
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-xs font-semibold tracking-[.08em] text-muted uppercase">Oblíbené</span>
+        <div className="-mx-4 mt-5 flex items-center gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap" aria-label="Rychlý výběr sportu">
+          <button type="button" aria-pressed={!sport} onClick={() => router.push(hrefFor({ city: cityInput, sport: "", pageIndex: 0 }), { scroll: false })} className={`min-h-11 rounded-full border px-4 text-sm font-medium transition-colors ${!sport ? "border-foreground bg-foreground text-page" : "border-line bg-page hover:border-muted"}`}>Všechny sporty</button>
           {popularSports.map((value) => {
             const active = sport.toLocaleLowerCase("cs") === value;
             return (
@@ -155,43 +169,43 @@ export function VenueSearch() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => toggleSport(value)}
-                className={`min-h-9 rounded-full border px-3.5 text-sm font-medium transition-colors ${
+                className={`inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-colors ${
                   active
                     ? "border-foreground bg-foreground text-page"
-                    : "border-line text-foreground hover:bg-surface"
+                    : "border-line bg-page text-foreground hover:border-muted"
                 }`}
               >
-                {capitalize(value)}
+                {active && <Check size={15} aria-hidden="true" />}{capitalize(value)}
               </button>
             );
           })}
         </div>
       </form>
 
-      <section aria-live="polite" aria-busy={state.status === "loading"} className="mt-10">
+      <section id="vysledky" aria-labelledby="venue-results-title" aria-busy={state.status === "loading"} className="mt-9 scroll-mt-28">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold text-muted">
+          <h2 id="venue-results-title" aria-live="polite" aria-atomic="true" className="font-display text-xl font-semibold tracking-tight">
             {state.status === "done"
               ? venuesLabel(state.list.pageInfo.total)
               : state.status === "loading"
                 ? "Hledáme…"
                 : "Výsledky"}
-            {filtered && (
-              <span className="font-normal">
-                {" "}
-                · {[city && `město „${city}“`, sport && `sport „${sport}“`].filter(Boolean).join(", ")}
-              </span>
-            )}
           </h2>
-          {filtered && (
+          {isManager && <Link href="/venues/new" className="inline-flex min-h-11 items-center gap-2 rounded-lg text-sm font-semibold hover:underline"><Plus size={16} aria-hidden="true" /> Přidat sportoviště</Link>}
+        </div>
+        {filtered && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {city && <Link scroll={false} href={hrefFor({ city: "", sport, pageIndex: 0 })} aria-label={`Zrušit filtr města ${city}`} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-surface px-3 text-sm hover:bg-line"><MapPin size={15} aria-hidden="true" />{city}<X size={14} aria-hidden="true" /></Link>}
+            {sport && <Link scroll={false} href={hrefFor({ city, sport: "", pageIndex: 0 })} aria-label={`Zrušit filtr sportu ${sport}`} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-surface px-3 text-sm hover:bg-line"><TennisBall size={15} aria-hidden="true" />{capitalize(sport)}<X size={14} aria-hidden="true" /></Link>}
             <Link
               href={pathname}
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line px-3 text-sm font-medium text-foreground hover:bg-surface"
+              scroll={false}
+              className="inline-flex min-h-11 items-center px-2 text-sm text-muted underline underline-offset-4 hover:text-foreground"
             >
-              <X size={14} aria-hidden="true" /> Zrušit filtry
+              Zrušit vše
             </Link>
-          )}
-        </div>
+          </div>
+        )}
 
         {state.status === "loading" && <ResultSkeleton />}
 
@@ -214,14 +228,17 @@ export function VenueSearch() {
               <MagnifyingGlass size={26} aria-hidden="true" />
             </span>
             <p className="mt-5 font-display text-xl font-semibold text-foreground">
-              {filtered ? "Nic jsme nenašli" : "Zatím tu není žádné sportoviště"}
+              {pageIndex > 0 ? "Na této stránce už nic není" : filtered ? "Nic jsme nenašli" : "Zatím tu není žádné sportoviště"}
             </p>
             <p className="mt-2 max-w-md text-muted">
-              {filtered
+              {pageIndex > 0
+                ? "Vraťte se na první stránku a projděte aktuální nabídku."
+                : filtered
                 ? "Zkuste jiné město nebo sport, případně zrušte filtry a projděte všechna sportoviště."
                 : "Jakmile správci přidají svá sportoviště a kurty, objeví se tady."}
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
+              {pageIndex > 0 && <Link href={hrefFor({ city, sport, pageIndex: 0 })} className="button button-dark">Zpět na první stránku</Link>}
               {filtered && (
                 <Link href={pathname} className="button button-outline">
                   Zrušit filtry
@@ -241,14 +258,14 @@ export function VenueSearch() {
             <ul className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {state.list.itemList.map((venue, index) => (
                 <li key={venue.id}>
-                  <VenueCard venue={venue} priority={index < 3} highlightedSport={sport} />
+                  <VenueCard venue={venue} priority={index < 3} highlightedSport={sport} returnHref={hrefFor({ city, sport, pageIndex })} />
                 </li>
               ))}
             </ul>
             <Pagination
               pageIndex={pageIndex}
               total={state.list.pageInfo.total}
-              hrefFor={(nextPage) => hrefFor({ city, sport, pageIndex: nextPage })}
+              hrefFor={(nextPage) => `${hrefFor({ city, sport, pageIndex: nextPage })}#vysledky`}
             />
           </>
         )}
@@ -281,10 +298,12 @@ function VenueCard({
   venue,
   priority,
   highlightedSport,
+  returnHref,
 }: {
   venue: VenueListItem;
   priority: boolean;
   highlightedSport: string;
+  returnHref: string;
 }) {
   const shown = venue.sports.slice(0, 3);
   const hidden = venue.sports.length - shown.length;
@@ -292,10 +311,10 @@ function VenueCard({
 
   return (
     <Link
-      href={`/venues/${venue.id}`}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-page transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(23,59,43,.55)]"
+      href={`/venues/${venue.id}${returnHref !== "/venues" ? `?from=${encodeURIComponent(returnHref)}` : ""}`}
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-page transition-[border-color,box-shadow] duration-200 hover:border-muted/50 hover:shadow-[0_16px_36px_-24px_rgba(23,59,43,.35)]"
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-surface">
+      <div className="relative aspect-[16/9] overflow-hidden bg-surface">
         <Image
           src={imageForSports(venue.sports)}
           alt=""
@@ -304,11 +323,10 @@ function VenueCard({
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition duration-500 group-hover:scale-[1.04]"
         />
-        <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-page/90 px-2.5 py-1 text-xs font-semibold text-foreground backdrop-blur">
-          <MapPin size={13} aria-hidden="true" /> {venue.city}
-        </span>
+        <span className="absolute right-3 bottom-3 rounded-md bg-brand-900/70 px-2 py-1 text-[10px] text-white">Ilustrační foto</span>
       </div>
       <div className="flex flex-1 flex-col p-5">
+        <p className="mb-2 flex items-center gap-1.5 text-sm text-muted"><MapPin size={15} aria-hidden="true" />{venue.city}</p>
         <h3 className="font-display text-xl leading-snug font-semibold tracking-[-.02em] text-foreground">
           {venue.name}
         </h3>
@@ -329,9 +347,10 @@ function VenueCard({
             <li className="rounded-full bg-surface px-2.5 py-1 text-xs font-medium text-muted">+{hidden}</li>
           )}
         </ul>
-        <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-foreground">
-          Zobrazit sportoviště
-          <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
+        {venue.sports.length === 0 && <p className="mt-2 text-sm text-muted">Nabídka sportů se připravuje</p>}
+        <span className="mt-auto flex items-center justify-between gap-2 pt-6 text-sm font-semibold text-foreground">
+          Detail a kurty
+          <span className="flex size-9 items-center justify-center rounded-full bg-surface transition-colors group-hover:bg-ball group-hover:text-brand-900"><ArrowRight size={17} aria-hidden="true" /></span>
         </span>
       </div>
     </Link>

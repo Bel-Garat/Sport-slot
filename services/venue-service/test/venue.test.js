@@ -15,6 +15,7 @@ const venues = [
 		address: 'Sportovní 1',
 		city: 'Praha',
 		description: 'Venkovní areál se čtyřmi hřišti.',
+		imageUrl: '/images/venues/football.webp',
 		managerId: '00000000-0000-4000-8000-000000000001',
 		openingHours: [{ dayOfWeek: 1, openTime: '07:00', closeTime: '22:00' }],
 		courts: [
@@ -46,8 +47,8 @@ test('venue/list without filters returns venues with courts, sorted, 20 per page
 	assert.equal(response.status, 200)
 	assert.deepEqual(response.body, {
 		itemList: [
-			{ id: PLZEN, name: 'Areál Plzeň', city: 'Plzeň', sports: ['Tenis'] },
-			{ id: SPORTCENTRUM, name: 'Sportcentrum', city: 'Praha', sports: ['fotbal', 'tenis', 'nohejbal', 'streetbal'] },
+			{ id: PLZEN, name: 'Areál Plzeň', city: 'Plzeň', imageUrl: null, sports: ['Tenis'] },
+			{ id: SPORTCENTRUM, name: 'Sportcentrum', city: 'Praha', imageUrl: '/images/venues/football.webp', sports: ['fotbal', 'tenis', 'nohejbal', 'streetbal'] },
 		],
 		pageInfo: { pageIndex: 0, pageSize: 20, total: 2 },
 		uuAppErrorMap: {},

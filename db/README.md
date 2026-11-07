@@ -193,6 +193,19 @@ npm exec --workspace @sportslot/db -- prisma migrate status
 npm run seed --workspace @sportslot/db
 ```
 
+### Demo sport centres
+
+`db/prisma/seed-demo.sql` adds nine fictional sport centres for demos and testing in Praha, Brno, Plzeň, Ostrava, Olomouc, Liberec and Hradec Králové: 28 courts, opening hours and a price list for every court (cheaper before 16:00, peak after 16:00, one weekend rate). Each venue has a photo in `frontend/public/images/venues/` referenced by `image_url`, and the original Sportcentrum gets `/images/community.webp`. All venues belong to the seeded manager (`00000000-0000-4000-8000-000000000001`).
+
+It needs the `20261107_venue_image_url` migration and is idempotent: fixed IDs, `ON CONFLICT DO NOTHING`, and price rules are only added to courts that have none.
+
+```bash
+npm exec --workspace @sportslot/db -- prisma migrate deploy --config prisma7.config.ts
+npm run seed:demo --workspace @sportslot/db
+```
+
+Applied to the shared Supabase database on 7 November 2026 (Daniel Kolář, agreed in the team).
+
 ## 8. Security and collaboration
 
 - Keep database credentials outside Git.

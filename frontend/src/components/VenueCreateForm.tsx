@@ -105,6 +105,12 @@ export function VenueCreateForm() {
           teprve pak vás hráči uvidí ve vyhledávání.
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-4">
+          <Link
+            href={`/venues/${created.id}/courts/new`}
+            className={primaryButtonClass}
+          >
+            Přidat kurt
+          </Link>
           <button
             type="button"
             className={secondaryButtonClass}
@@ -112,8 +118,8 @@ export function VenueCreateForm() {
           >
             Založit další sportoviště
           </button>
-          <Link href="/" className={linkClass}>
-            Na úvodní stránku
+          <Link href={`/venues/${created.id}`} className={linkClass}>
+            Zobrazit sportoviště
           </Link>
         </div>
       </section>

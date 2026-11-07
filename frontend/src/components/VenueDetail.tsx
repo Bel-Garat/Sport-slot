@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, MapPin } from "@phosphor-icons/react";
+import { ArrowLeft, MapPin, Plus } from "@phosphor-icons/react";
 import { ApiError } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 import { dayNames, daysOfWeek } from "@/lib/venueForm";
 import { getVenue, type VenueDetail as Venue } from "@/lib/venues";
 
@@ -79,6 +80,8 @@ export function VenueDetail({ id }: { id: string }) {
 }
 
 function VenueContent({ venue }: { venue: Venue }) {
+  const { user } = useAuth();
+  const isManager = Boolean(user?.roles.includes("MANAGER"));
   const hoursByDay = new Map(venue.openingHours.map((hours) => [hours.dayOfWeek, hours]));
 
   return (
@@ -117,9 +120,19 @@ function VenueContent({ venue }: { venue: Venue }) {
         </section>
 
         <section className={cardClass} aria-labelledby="courts-title">
-          <h2 id="courts-title" className={sectionTitleClass}>
-            Kurty a hřiště
-          </h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 id="courts-title" className={sectionTitleClass}>
+              Kurty a hřiště
+            </h2>
+            {isManager && (
+              <Link
+                href={`/venues/${venue.id}/courts/new`}
+                className="button button-outline min-h-10 px-4 py-2"
+              >
+                <Plus size={16} aria-hidden="true" /> Přidat kurt
+              </Link>
+            )}
+          </div>
           {venue.courts.length === 0 ? (
             <p className="mt-4 text-muted">Sportoviště zatím nemá žádné kurty.</p>
           ) : (

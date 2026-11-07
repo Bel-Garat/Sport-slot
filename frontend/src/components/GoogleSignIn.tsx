@@ -61,6 +61,7 @@ export function SignInPanel({
 }) {
   const { signIn } = useAuth();
   const buttonRef = useRef<HTMLDivElement>(null);
+  const pendingRef = useRef(false);
   const [scriptState, setScriptState] = useState<"loading" | "ready" | "failed">("loading");
   const [buttonRendered, setButtonRendered] = useState(false);
   const [pending, setPending] = useState(false);
@@ -78,6 +79,8 @@ export function SignInPanel({
 
   const handleCredential = useCallback(
     async ({ credential }: GoogleCredentialResponse) => {
+      if (pendingRef.current) return;
+      pendingRef.current = true;
       setPending(true);
       setError(null);
       try {
@@ -90,6 +93,7 @@ export function SignInPanel({
             : "Server se nepodařilo kontaktovat. Pokud byl delší dobu nečinný, probouzí se – zkuste to za chvíli znovu.",
         );
       } finally {
+        pendingRef.current = false;
         setPending(false);
       }
     },
@@ -101,22 +105,33 @@ export function SignInPanel({
     if (scriptState !== "ready" || !googleClientId || !container || !window.google) {
       return;
     }
-    const width = Math.round(Math.min(Math.max(container.clientWidth, 220), 400));
     window.google.accounts.id.initialize({
       client_id: googleClientId,
       callback: handleCredential,
     });
-    window.google.accounts.id.renderButton(container, {
-      type: "standard",
-      theme: window.matchMedia("(prefers-color-scheme: dark)").matches ? "outline" : "filled_black",
-      size: "large",
-      shape: "pill",
-      text: "continue_with",
-      logo_alignment: "center",
-      locale: "cs",
-      width,
-    });
-    setButtonRendered(true);
+    let lastWidth = 0;
+    const render = () => {
+      const width = Math.floor(Math.min(container.clientWidth, 400));
+      // A dialog can still be hidden when the SDK becomes ready.
+      if (width === 0 || width === lastWidth) return;
+      lastWidth = width;
+      container.replaceChildren();
+      window.google?.accounts.id.renderButton(container, {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        shape: "rectangular",
+        text: "continue_with",
+        logo_alignment: "left",
+        locale: "cs",
+        width,
+      });
+      setButtonRendered(true);
+    };
+    render();
+    const observer = new ResizeObserver(render);
+    observer.observe(container);
+    return () => observer.disconnect();
   }, [scriptState, handleCredential]);
 
   return (
@@ -129,13 +144,13 @@ export function SignInPanel({
       )}
 
       {!googleClientId ? (
-        <p role="alert" className="flex gap-3 text-sm text-foreground">
-          <WarningCircle size={20} className="mt-0.5 shrink-0 text-red-700 dark:text-red-400" aria-hidden="true" />
-          <span>
-            Přihlášení přes Google teď není dostupné – chybí nastavení
-            <code className="mx-1 rounded bg-surface px-1.5 py-0.5 text-xs">NEXT_PUBLIC_GOOGLE_CLIENT_ID</code>.
-          </span>
-        </p>
+        <div role="status" className="flex gap-3 rounded-xl border border-line bg-surface/60 p-4 text-sm">
+          <Info size={20} className="mt-0.5 shrink-0 text-muted" aria-hidden="true" />
+          <div>
+            <p className="font-semibold">Přihlášení je dočasně nedostupné</p>
+            <p className="mt-1 leading-relaxed text-muted">Zkuste to prosím později. Sportoviště si můžete prohlédnout i bez účtu.</p>
+          </div>
+        </div>
       ) : (
         <div>
           <Script
@@ -144,14 +159,17 @@ export function SignInPanel({
             onReady={() => setScriptState("ready")}
             onError={() => setScriptState("failed")}
           />
-          <div className="relative min-h-11">
+          <div className={scriptState === "failed" && !buttonRendered ? "hidden" : "relative min-h-11"}>
             <div
               ref={buttonRef}
               aria-busy={pending}
-              className={`flex justify-center ${pending ? "pointer-events-none opacity-40" : ""}`}
+              inert={pending}
+              className={`flex min-h-11 w-full items-center justify-center ${pending ? "pointer-events-none opacity-40" : ""}`}
             />
             {!buttonRendered && scriptState === "loading" && (
-              <div aria-hidden="true" className="absolute inset-0 h-11 animate-pulse rounded-full bg-surface" />
+              <div role="status" className="absolute inset-0 flex h-11 items-center justify-center gap-2 rounded border border-line bg-surface text-sm text-muted">
+                <CircleNotch size={18} className="animate-spin" aria-hidden="true" /> Načítání přihlášení…
+              </div>
             )}
           </div>
 
@@ -187,6 +205,7 @@ export function SignInPanel({
               <span>{error}</span>
             </p>
           )}
+          {buttonRendered && !pending && !error && <p className="mt-3 text-center text-xs leading-relaxed text-muted">Jste tu poprvé? Účet vám rovnou vytvoříme.</p>}
         </div>
       )}
 
@@ -196,9 +215,15 @@ export function SignInPanel({
         <span className="h-px flex-1 bg-line" />
       </div>
 
-      <Link href="/venues" onClick={onBrowse} className="button button-outline w-full gap-2">
-        Procházet sportoviště bez přihlášení <ArrowRight size={16} aria-hidden="true" />
-      </Link>
+      {onBrowse ? (
+        <button type="button" onClick={onBrowse} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors hover:bg-surface">
+          Pokračovat bez přihlášení <ArrowRight size={16} aria-hidden="true" />
+        </button>
+      ) : (
+        <Link href="/venues" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors hover:bg-surface">
+          Prohlédnout sportoviště <ArrowRight size={16} aria-hidden="true" />
+        </Link>
+      )}
 
       <p className="flex items-start gap-2 text-xs leading-relaxed text-muted">
         <LockSimple size={14} className="mt-0.5 shrink-0" aria-hidden="true" />

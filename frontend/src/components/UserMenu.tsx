@@ -34,7 +34,7 @@ export function RoleBadges({ user }: { user: CurrentUser }) {
   );
 }
 
-export function UserMenu({ user }: { user: CurrentUser }) {
+export function UserMenu({ user, onOpen }: { user: CurrentUser; onOpen?: () => void }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const menuId = useId();
@@ -70,28 +70,30 @@ export function UserMenu({ user }: { user: CurrentUser }) {
     "flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-foreground transition-colors hover:bg-surface";
 
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className="relative" onBlur={(event) => {
+      if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+    }}>
       <button
         ref={buttonRef}
         type="button"
         aria-expanded={open}
         aria-controls={menuId}
-        onClick={() => setOpen(!open)}
-        className="flex min-h-11 items-center gap-2 rounded-full border border-line py-1 pr-3 pl-1 transition-colors hover:bg-surface"
+        onClick={() => { if (!open) onOpen?.(); setOpen(!open); }}
+        className="flex min-h-11 items-center gap-2 rounded-full border border-line p-1 transition-colors hover:bg-surface sm:pr-3"
       >
         <Avatar name={user.name} />
-        <span className="max-w-32 truncate text-sm font-semibold">{firstName}</span>
+        <span className="hidden max-w-32 truncate text-sm font-semibold sm:block">{firstName}</span>
         <CaretDown
           size={14}
           aria-hidden="true"
-          className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`hidden transition-transform duration-200 sm:block ${open ? "rotate-180" : ""}`}
         />
         <span className="sr-only">Účet uživatele {user.name}</span>
       </button>
       <div
         id={menuId}
         hidden={!open}
-        className="mobile-nav absolute right-0 mt-2 w-72 rounded-2xl border border-line bg-page p-2 shadow-[0_18px_50px_-20px_rgba(23,59,43,.45)]"
+        className="mobile-nav absolute -right-13 mt-3 w-72 max-w-[calc(100vw-2.5rem)] rounded-2xl border border-line bg-page p-2 shadow-[0_18px_50px_-20px_rgba(23,59,43,.45)] sm:right-0"
       >
         <div className="flex items-center gap-3 px-3 pt-2 pb-3">
           <Avatar name={user.name} size="lg" />
@@ -104,11 +106,11 @@ export function UserMenu({ user }: { user: CurrentUser }) {
           <RoleBadges user={user} />
         </div>
         <nav aria-label="Účet" className="border-t border-line pt-2">
-          <Link href="/venues" className={itemClass}>
+          <Link href="/venues" onClick={() => setOpen(false)} className={itemClass}>
             <MagnifyingGlass size={18} aria-hidden="true" /> Najít sportoviště
           </Link>
           {isManager && (
-            <Link href="/venues/new" className={itemClass}>
+            <Link href="/venues/new" onClick={() => setOpen(false)} className={itemClass}>
               <Plus size={18} aria-hidden="true" /> Přidat sportoviště
             </Link>
           )}

@@ -7,6 +7,7 @@ import { Logo } from "@/components/Logo";
 import { loginPath, logout, useAuth } from "@/lib/auth";
 
 const links = [
+  { href: "/venues", label: "Sportoviště" },
   { href: "/#sporty", label: "Najdi svůj sport" },
   { href: "/#jak-to-funguje", label: "Jak to funguje" },
   { href: "/#o-sportslotu", label: "O SportSlotu" },

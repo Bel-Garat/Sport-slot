@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import { Logo } from "@/components/Logo";
 
 export function SiteFooter() {
@@ -13,7 +12,7 @@ export function SiteFooter() {
           </nav>
         </div>
         <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6 text-xs text-muted">
-          <span>© {new Date().getFullYear()} SportSlot</span><a href="/brand/sportslot-brand-kit.zip" download className="inline-flex min-h-11 items-center gap-2 hover:text-foreground">Logo a brand materiály <ArrowUpRight size={15} aria-hidden="true" /></a>
+          <span>© {new Date().getFullYear()} SportSlot</span>
         </div>
       </div>
     </footer>

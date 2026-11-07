@@ -11,6 +11,7 @@ export type VenueListItem = {
   id: string;
   name: string;
   city: string;
+  imageUrl: string | null;
   sports: string[];
 };
 
@@ -40,6 +41,7 @@ export type VenueDetail = {
   address: string;
   city: string;
   description: string | null;
+  imageUrl: string | null;
   openingHours: { dayOfWeek: DayOfWeek; openTime: string; closeTime: string }[];
   courts: Court[];
   uuAppErrorMap: UuAppErrorMap;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, MapPin, Plus } from "@phosphor-icons/react";
+import { CaretRight, MapPin, Plus } from "@phosphor-icons/react";
 import { ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { dayNames, daysOfWeek } from "@/lib/venueForm";
@@ -48,12 +48,21 @@ export function VenueDetail({ id }: { id: string }) {
 
   return (
     <main id="main-content" className="mx-auto max-w-4xl px-4 py-12 md:py-16">
-      <Link
-        href="/venues"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-brand-700 hover:text-brand-900"
-      >
-        <ArrowLeft size={16} aria-hidden="true" /> Všechna sportoviště
-      </Link>
+      <nav aria-label="Drobečková navigace">
+        <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted">
+          <li>
+            <Link href="/venues" className="font-medium hover:text-foreground hover:underline">
+              Sportoviště
+            </Link>
+          </li>
+          <li aria-hidden="true">
+            <CaretRight size={12} />
+          </li>
+          <li aria-current="page" className="max-w-[60vw] truncate font-medium text-foreground">
+            {state.status === "done" ? state.venue.name : "Detail"}
+          </li>
+        </ol>
+      </nav>
 
       {state.status === "loading" && <p className="mt-8 text-muted">Načítání…</p>}
 
@@ -69,7 +78,7 @@ export function VenueDetail({ id }: { id: string }) {
       )}
 
       {state.status === "error" && (
-        <p role="alert" className="mt-8 font-medium text-red-700">
+        <p role="alert" className="mt-8 font-medium text-red-700 dark:text-red-400">
           {state.message}
         </p>
       )}

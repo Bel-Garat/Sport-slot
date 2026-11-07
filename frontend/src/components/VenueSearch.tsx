@@ -110,7 +110,7 @@ export function VenueSearch() {
         {state.status === "loading" && <p className="text-muted">Načítání…</p>}
 
         {state.status === "error" && (
-          <p role="alert" className="font-medium text-red-700">
+          <p role="alert" className="font-medium text-red-700 dark:text-red-400">
             {state.message}
           </p>
         )}

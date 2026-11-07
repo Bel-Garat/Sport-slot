@@ -81,11 +81,19 @@ Když `response.ok` je `false`, zobrazte `message` první položky v `uuAppError
 ### `GET venue/list`
 * **Popis:** Vyhledání sportovišť podle sportu a města (US 6, BUC 3).
 * **Práva:** Návštěvník (nepřihlášený) i Hráč.
+* **dtoIn (query):** `city?`, `sport?`, `pageIndex?` (od 0), `pageSize?` (1–100, výchozí 20). Filtry fungují samostatně i společně; `city` i `sport` ignorují velikost písmen a diakritiku (`plzen` = `Plzeň`). Prázdný text = bez filtru.
+* **dtoOut:** `itemList: [{ id, name, city, sports: [] }]` seřazené podle názvu, `pageInfo: { pageIndex, pageSize, total }`.
 * **Poznámka:** Vrací jen sportoviště, která mají alespoň jeden kurt.
+* **Chyby:** `venue/list/invalidDtoIn` (400), varování `venue/list/unsupportedKeys`.
 
 ### `GET venue/get`
 * **Popis:** Detail konkrétního sportoviště (US 6, BUC 3).
 * **Práva:** Návštěvník i Hráč.
+* **dtoIn (query):** `id` (UUID, povinné).
+* **dtoOut:** `id, name, address, city, description, openingHours: [{ dayOfWeek, openTime, closeTime }], courts: [{ id, name, sport, surface, indoor }]`. Čas je `"HH:MM"`, `dayOfWeek` 1–7 (Po–Ne).
+* **Chyby:** `venue/get/invalidDtoIn` (400), `venue/get/venueDoesNotExist` (404), varování `venue/get/unsupportedKeys`.
+
+Hodnocení (průměr recenzí) zatím venue/list ani venue/get nevrací. Recenze patří `review-service`, doplní se v S3.
 
 ## 2. Kurty (Court)
 

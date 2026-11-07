@@ -8,7 +8,13 @@ import {
   useRef,
   useState,
 } from "react";
-import { getCurrentUser, type CurrentUser } from "@/lib/api";
+import {
+  clearToken,
+  getCurrentUser,
+  setToken,
+  type CurrentUser,
+  type GoogleSignIn,
+} from "@/lib/api";
 
 export const loginPath = "/login";
 
@@ -31,12 +37,13 @@ type AuthState = {
   user: CurrentUser | null;
   loading: boolean;
   setUser: (user: CurrentUser | null) => void;
+  signIn: (signIn: GoogleSignIn) => void;
 };
 
 const AuthContext = createContext<AuthState | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<Omit<AuthState, "setUser">>({
+  const [state, setState] = useState<Pick<AuthState, "user" | "loading">>({
     user: null,
     loading: true,
   });
@@ -61,8 +68,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState({ user, loading: false });
   }, []);
 
+  const signIn = useCallback(
+    ({ token, user }: GoogleSignIn) => {
+      setToken(token);
+      setUser(user);
+    },
+    [setUser],
+  );
+
   return (
-    <AuthContext.Provider value={{ ...state, setUser }}>
+    <AuthContext.Provider value={{ ...state, setUser, signIn }}>
       {children}
     </AuthContext.Provider>
   );
@@ -74,4 +89,9 @@ export function useAuth(): AuthState {
     throw new Error("useAuth must be used inside <AuthProvider>");
   }
   return context;
+}
+
+export function logout(): void {
+  clearToken();
+  window.location.assign("/");
 }

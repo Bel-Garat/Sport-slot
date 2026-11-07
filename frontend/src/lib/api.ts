@@ -32,16 +32,48 @@ const mockUsers: Record<string, CurrentUser | null> = {
   },
 };
 
+const tokenStorageKey = "sportslot.token";
+
+export function getToken(): string | null {
+  try {
+    return window.localStorage.getItem(tokenStorageKey);
+  } catch {
+    return null;
+  }
+}
+
+export function setToken(token: string): void {
+  try {
+    window.localStorage.setItem(tokenStorageKey, token);
+  } catch {}
+}
+
+export function clearToken(): void {
+  try {
+    window.localStorage.removeItem(tokenStorageKey);
+  } catch {}
+}
+
+export function authHeaders(): Record<string, string> {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   const mockRole = process.env.NEXT_PUBLIC_MOCK_ROLE;
   if (mockRole) {
     return Object.hasOwn(mockUsers, mockRole) ? mockUsers[mockRole] : null;
   }
 
+  if (!getToken()) {
+    return null;
+  }
+
   const response = await fetch(`${apiBaseUrl}/user/me`, {
-    credentials: "include",
+    headers: authHeaders(),
   });
-  if (response.status === 401) {
+  if (response.status === 401 || response.status === 404) {
+    clearToken();
     return null;
   }
   if (!response.ok) {
@@ -159,12 +191,29 @@ export async function createVenue(dtoIn: VenueCreateDtoIn): Promise<Venue> {
 
   const response = await fetch(`${apiBaseUrl}/venue/create`, {
     method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify(dtoIn),
   });
   if (!response.ok) {
     throw await toApiError(response);
   }
   return (await response.json()) as Venue;
+}
+
+export type GoogleSignIn = {
+  token: string;
+  user: CurrentUser;
+};
+
+export async function signInWithGoogle(idToken: string): Promise<GoogleSignIn> {
+  const response = await fetch(`${apiBaseUrl}/auth/googleCallback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ idToken }),
+  });
+  if (!response.ok) {
+    throw await toApiError(response);
+  }
+  const { token, user } = (await response.json()) as GoogleSignIn;
+  return { token, user };
 }

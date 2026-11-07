@@ -114,4 +114,73 @@ Hodnocení (průměr recenzí) zatím venue/list ani venue/get nevrací. Recenze
 * **Tělo požadavku (JSON):** `courtId`, `dayOfWeek`, `startTime`, `endTime`, `pricePerHour`.
 
 ### `GET priceRule/listByCourt`
-* **Popis:** Získání ceníku kurtu. Tento endpoint bude volat `reservation-service` pro výpočet výsledné ceny rezervace (US 7).
+**Popis:** Získání ceníku kurtu. Tento endpoint bude volat `reservation-service` pro výpočet výsledné ceny rezervace (US 7). 
+## 4. Auth – Google přihlášení (návrh API kontraktu)
+
+### POST /api/auth/googleCallback
+
+**Popis:** Přihlášení uživatele pomocí Google účtu. Backend ověří Google ID token, vyhledá nebo vytvoří uživatele a vrátí JWT token aplikace.
+
+**Autentizace:** Není vyžadována.
+
+**dtoIn:**
+```json
+{
+  "idToken": "google-id-token"
+}
+```
+
+**dtoOut (200):**
+```json
+{
+  "token": "application-jwt-token",
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "user@example.com",
+    "name": "Test User",
+    "roles": ["PLAYER"]
+  },
+  "uuAppErrorMap": {}
+}
+```
+
+**Možné chyby:**
+- 400 – invalidDtoIn
+- 401 – neplatný Google token
+- 500 – interní chyba serveru
+
+---
+
+## 5. User – Informace o přihlášeném uživateli (návrh API kontraktu)
+
+
+### GET /api/user/me
+
+**Popis:** Vrátí informace o aktuálně přihlášeném uživateli.
+
+**Autentizace:** Vyžadován JWT token aplikace.
+
+**HTTP hlavička:**
+```text
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**dtoIn:** Žádné vstupní parametry.
+
+**dtoOut (200):**
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "email": "user@example.com",
+  "name": "Test User",
+  "roles": ["PLAYER"],
+  "uuAppErrorMap": {}
+}
+```
+
+**Možné chyby:**
+- 401 – notAuthenticated
+- 404 – uživatel nebyl nalezen
+- 500 – interní chyba serveru
+
+**Poznámka:** Endpoint /api/user/me vyžaduje doplnění směrování v gateway a implementaci v backendové službě.

@@ -317,13 +317,13 @@ function VenueCard({
       <div className="relative aspect-[16/9] overflow-hidden bg-surface">
         <Image
           src={venue.imageUrl ?? imageForSports(venue.sports)}
-          alt=""
+          alt={venue.imageUrl ? venue.name : ""}
           fill
           priority={priority}
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition duration-500 group-hover:scale-[1.04]"
         />
-        <span className="absolute right-3 bottom-3 rounded-md bg-brand-900/70 px-2 py-1 text-[10px] text-white">Ilustrační foto</span>
+        {!venue.imageUrl && <span className="absolute right-3 bottom-3 rounded-md bg-brand-900/70 px-2 py-1 text-[10px] text-white">Ilustrační foto</span>}
       </div>
       <div className="flex flex-1 flex-col p-5">
         <p className="mb-2 flex items-center gap-1.5 text-sm text-muted"><MapPin size={15} aria-hidden="true" />{venue.city}</p>

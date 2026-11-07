@@ -29,7 +29,7 @@ export function notAuthorized() {
 
 // "/api/venue/get" i "/venue/get" -> "venue/get"
 export function commandOf(req) {
-	return req.path.replace(/^\/(api\/)?/, '').replace(/\/$/, '')
+	return `${req.baseUrl ?? ''}${req.path}`.replace(/^\/(api\/)?/, '').replace(/\/$/, '')
 }
 
 // Varování unsupportedKeys pro úspěšnou odpověď; bez cizích klíčů vrací {}.

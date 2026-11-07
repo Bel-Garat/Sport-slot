@@ -1,9 +1,22 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { routes } from "./routes.js";
 import { createAuthMiddleware } from "./middleware/auth.js";
 import { requireRole } from "./middleware/roles.js";
 import { AppError, errorHandler, notFound } from "@sportslot/api-format";
+
+// Nastavení __dirname pro ES Moduly
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Načtení OpenAPI specifikace
+const openapiDocument = YAML.load(
+  path.join(__dirname, "../../docs/openapi.yaml"),
+);
 
 const PUBLIC_ENDPOINTS = new Set([
   "POST /api/auth/googleCallback",
@@ -63,6 +76,9 @@ export function createApp(
   app.get("/health", (_req, res) => {
     res.json({ status: "ok", service: "gateway" });
   });
+
+  // Swagger UI (musí být před 404 handlerem)
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiDocument));
 
   // Authentication and authorization
   app.use((req, res, next) => {

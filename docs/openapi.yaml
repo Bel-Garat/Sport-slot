@@ -1,0 +1,20 @@
+openapi: 3.0.0
+info:
+  title: SportSlot API Gateway
+  version: 1.0.0
+  description: API dokumentace pro aplikaci SportSlot
+paths:
+  /health:
+    get:
+      summary: Kontrola stavu gateway služby
+      responses:
+        '200':
+          description: Gateway funguje správně
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok

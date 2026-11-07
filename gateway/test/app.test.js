@@ -29,6 +29,13 @@ test('GET /health reports the gateway as up', async () => {
 	assert.deepEqual(response.body, { status: 'ok', service: 'gateway' })
 })
 
+test('GET /api-docs/ serves the Swagger UI', async () => {
+	const response = await request(createApp(serviceUrls, TEST_CONFIG)).get('/api-docs/')
+	assert.equal(response.status, 200)
+	assert.match(response.headers['content-type'], /text\/html/)
+	assert.match(response.text, /swagger-ui/)
+})
+
 test('forwards /api/venue requests to the venue service without the /api prefix', async () => {
 	const response = await request(createApp(serviceUrls, TEST_CONFIG)).get('/api/venue/list')
 	assert.equal(response.status, 200)

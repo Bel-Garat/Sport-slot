@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { VenueSearch } from "@/components/VenueSearch";
+import { VenueSearch, VenueSearchSkeleton } from "@/components/VenueSearch";
 
 export const metadata: Metadata = {
   title: "Sportoviště · SportSlot",
@@ -8,17 +8,24 @@ export const metadata: Metadata = {
 
 export default function VenuesPage() {
   return (
-    <main id="main-content" className="mx-auto max-w-5xl px-4 py-12 md:py-16">
-      <p className="font-semibold text-muted">Najdi, kde si zahrát</p>
-      <h1 className="mt-2 font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-        Sportoviště
-      </h1>
-      <p className="mt-3 max-w-2xl text-lg text-muted">
-        Hledejte podle města a sportu. Na velikosti písmen ani diakritice nezáleží.
-      </p>
-      <Suspense fallback={<p className="mt-10 text-muted">Načítání…</p>}>
-        <VenueSearch />
-      </Suspense>
+    <main id="main-content" className="pb-20">
+      <section className="border-b border-line bg-surface/50">
+        <div className="section-wrap pt-12 pb-10 md:pt-16 md:pb-12">
+          <p className="eyebrow">Najdi, kde si zahrát</p>
+          <h1 className="mt-3 font-display text-[clamp(2.4rem,5vw,3.75rem)] leading-[1.05] font-semibold tracking-[-.045em] text-foreground">
+            Sportoviště
+          </h1>
+          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
+            Vyhledejte sportoviště podle města a sportu. Na velikosti písmen ani diakritice
+            nezáleží – „plzen“ najde i Plzeň.
+          </p>
+        </div>
+      </section>
+      <div className="section-wrap">
+        <Suspense fallback={<VenueSearchSkeleton />}>
+          <VenueSearch />
+        </Suspense>
+      </div>
     </main>
   );
 }

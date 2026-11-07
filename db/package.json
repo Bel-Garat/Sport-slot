@@ -8,5 +8,8 @@
   "devDependencies": {
     "dotenv": "^18.0.9",
     "prisma": "^7.10.1"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.10.1"
   }
 }

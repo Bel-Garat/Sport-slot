@@ -52,3 +52,31 @@ Stejné kontroly spustíte lokálně příkazy `npm run lint`, `npm test` a `npm
 1. Otevři soubor `docs/openapi.yaml`.
 2. V sekci `paths` přidej požadovanou cestu a HTTP metodu (`get`, `post` atd.).
 3. Po uložení souboru se dokumentace automaticky aktualizuje na adrese `/api-docs`.
+
+## Nasazení
+
+| Část | Kde | Adresa |
+|---|---|---|
+| Frontend | Netlify | https://sport-slot.netlify.app |
+| Backend (gateway + služby) | Render, služba `sportslot-api` | https://sportslot-api.onrender.com |
+| Databáze | Supabase | viz `db/README.md` |
+
+### Backend na Renderu
+Celý backend běží jako jedna webová služba: `scripts/start-backend.mjs` spustí všech pět mikroslužeb na interních portech 4001–4005 a gateway na portu, který přidělí Render (`PORT`). Když kterýkoli proces spadne, skončí celá služba a Render ji restartuje. Jedna služba se vejde do free tarifu.
+
+Nastavení je v `render.yaml` (Render Blueprint):
+1. Render → **New → Blueprint** → vybrat tento repozitář (větev `main`).
+2. Vyplnit `DATABASE_URL` (Supabase, session pooler, port 5432). `JWT_SECRET` a `GATEWAY_SECRET` Render vygeneruje sám, `GOOGLE_CLIENT_ID` a `FRONTEND_ORIGIN` jsou v `render.yaml`.
+3. Po nasazení ověřit `https://sportslot-api.onrender.com/health` a Swagger na `/api-docs`.
+
+Free služba po 15 minutách nečinnosti usne a první požadavek pak trvá asi minutu. Před demem ji probuďte otevřením `/health`.
+
+### Frontend na Netlify
+V Site configuration → Environment variables nastavit a pak spustit nový deploy:
+* `NEXT_PUBLIC_API_URL` = `https://sportslot-api.onrender.com/api`
+* `NEXT_PUBLIC_GOOGLE_CLIENT_ID` = Client ID z `.env.example`
+
+`NEXT_PUBLIC_MOCK_ROLE` na Netlify nikdy nenastavujte.
+
+### Google přihlášení
+OAuth Client ID (projekt `sportslot-513614`) musí mít v Google Cloud Console → Credentials v **Authorized JavaScript origins** adresu frontendu (`https://sport-slot.netlify.app`) a pro lokální vývoj `http://localhost:3000`. Redirect URI ani client secret aplikace nepoužívá – frontend dostane ID token přímo od Google a backend ho ověří proti Client ID. Client secret do repozitáře nepatří.

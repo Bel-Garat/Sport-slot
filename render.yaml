@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: sportslot-api
+    name: sport-slot-api
     runtime: node
     plan: free
     region: frankfurt

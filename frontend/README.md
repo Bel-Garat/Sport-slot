@@ -16,7 +16,7 @@ Styling je v Tailwind CSS v4 (dohodnuto v týmu 4. 11. 2026). Layouty používaj
 - Barvy jsou v `@theme` v `globals.css`: `brand-50` až `brand-900` (zelená kurtu), `ball` (žlutozelená tenisového míčku, jen na akcenty a hlavní CTA), `ink-500` a `ink-900` pro text. Používejte je místo výchozí palety Tailwindu (`text-brand-900`, `bg-ball`…).
 - Písma: `font-display` (Bricolage Grotesque) na nadpisy, `font-sans` (Inter) na text. Jsou self-hostovaná v `public/fonts` včetně češtiny a licencí; načítá je `fonts.css` s `font-display: swap`.
 - Logo: `<Logo />` (značka + název, odkaz na úvod) a `<LogoMark />` (jen značka) v `src/components/Logo.tsx`, favicon je `src/app/icon.svg`.
-- Hlavička (`SiteHeader`) a patička (`SiteFooter`) jsou v root layoutu. V pravé části hlavičky je tlačítko „Přihlásit se“ (odkaz na `/login`, zobrazí se jen nepřihlášenému). Stránku `/login` a avatar přihlášeného uživatele doplní úkol FE přihlášení.
+- Hlavička (`SiteHeader`) a patička (`SiteFooter`) jsou v root layoutu. V pravé části hlavičky je tlačítko „Přihlásit se“ (odkaz na `/login`, zobrazí se jen nepřihlášenému). Přihlášenému uživateli ukazuje jméno a tlačítko „Odhlásit se“.
 
 Podklady značky, marketingové texty a zadání pro AI video jsou v [`docs/brand`](../docs/brand/README.md). Hero obsahuje tiché nekonečné video na pozadí s pauzou, statickým fallbackem a respektem k reduced motion / save-data. Video `public/media/court-loop.mp4` je AI záběr tenistky (720p, zrychleno na 1,25×, 3,5 s), konec je prolnutý se začátkem, aby smyčka nenaskočila. Plakát před spuštěním videa je jeho první snímek `public/images/hero-poster.webp`. Rezervace na úvodní stránce je jasně označená frontendová ukázka bez odesílání dat.
 
@@ -38,9 +38,13 @@ NEXT_PUBLIC_MOCK_ROLE=manager npm run dev:frontend
 
 `NEXT_PUBLIC_MOCK_ROLE` je jen pro lokální vývoj – nikdy ho nenastavujte na Netlify. Hodnota se vkládá do buildu, takže by se tam každý návštěvník stal mock uživatelem.
 
-Stránka `/login` čte parametr `next` přes `useSearchParams()` (stránka musí být obalená v `<Suspense>`, jinak `next build` selže), po přihlášení zavolá `setUser(user)` z `useAuth()` a přesměruje na `safeNextPath(next)` z `@/lib/auth` – nikdy přímo na hodnotu `next`.
+## Přihlášení
 
-Odhlášení zavolá odhlášení na backendu a pak `window.location.assign("/")`. Samotné `setUser(null)` na chráněné stránce by přesměrovalo na přihlášení s `next` na tuto stránku.
+Stránka `/login` zobrazí tlačítko Google (Google Identity Services, `NEXT_PUBLIC_GOOGLE_CLIENT_ID` z `.env.example`). Google vrátí ID token, `signInWithGoogle()` z `@/lib/api` ho pošle na `POST /api/auth/googleCallback` a `signIn()` z `useAuth()` uloží JWT aplikace i uživatele. Pak stránka přesměruje na `safeNextPath(next)` z `@/lib/auth` – nikdy přímo na hodnotu `next`. Parametr `next` se čte přes `useSearchParams()`, proto je obsah stránky v `<Suspense>`.
+
+JWT je v `localStorage` (`sportslot.token`) a chráněné endpointy ho dostávají v hlavičce `Authorization: Bearer …` – volejte `fetch` s `headers: { ...authHeaders() }`. Při 401 z `user/me` se token smaže a uživatel je brán jako nepřihlášený.
+
+Odhlášení je `logout()` z `@/lib/auth` (tlačítko v hlavičce): smaže token a načte úvodní stránku. Backend žádné odhlášení nemá. Samotné `setUser(null)` na chráněné stránce by přesměrovalo na přihlášení s `next` na tuto stránku.
 
 `RequireRole` je jen UX, ne bezpečnostní hranice: obsah serverových komponent uvnitř je i tak v HTML stránky. Citlivá data načítejte až v klientské komponentě po přihlášení – oprávnění vždy ověřuje backend.
 

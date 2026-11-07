@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, List, X } from "@phosphor-icons/react";
+import { ArrowUpRight, List, SignOut, X } from "@phosphor-icons/react";
 import { Logo } from "@/components/Logo";
-import { loginPath, useAuth } from "@/lib/auth";
+import { loginPath, logout, useAuth } from "@/lib/auth";
 
 const links = [
   { href: "/#sporty", label: "Najdi svůj sport" },
@@ -44,6 +44,20 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
+          {user && (
+            <div className="hidden items-center gap-3 sm:flex">
+              <span className="max-w-48 truncate text-sm font-medium" title={user.email}>
+                {user.name}
+              </span>
+              <button
+                type="button"
+                onClick={logout}
+                className="button button-outline"
+              >
+                Odhlásit se <SignOut size={18} aria-hidden="true" />
+              </button>
+            </div>
+          )}
           {showLogin && (
             <Link
               href={loginPath}
@@ -88,6 +102,15 @@ export function SiteHeader() {
             <ArrowUpRight size={18} aria-hidden="true" />
           </Link>
         ))}
+        {user && (
+          <button
+            type="button"
+            onClick={logout}
+            className="button button-outline mt-3 w-full sm:hidden"
+          >
+            Odhlásit se ({user.name}) <SignOut size={18} aria-hidden="true" />
+          </button>
+        )}
         {showLogin && (
           <Link
             href={loginPath}

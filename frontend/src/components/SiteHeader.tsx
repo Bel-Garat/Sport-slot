@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { ArrowUpRight, List, Plus, SignOut, X } from "@phosphor-icons/react";
 import { Logo } from "@/components/Logo";
 import { Avatar, RoleBadges, UserMenu } from "@/components/UserMenu";
-import { loginHref, loginPath, logout, useAuth } from "@/lib/auth";
+import { loginPath, logout, useAuth } from "@/lib/auth";
 
 const links = [
   { href: "/venues", label: "Sportoviště" },
@@ -16,25 +16,11 @@ const links = [
   { href: "/#pro-spravce", label: "Pro sportoviště" },
 ];
 
-function useLoginLink() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const href = loginHref(pathname);
-  const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
-    event.preventDefault();
-    const { pathname: path, search, hash } = window.location;
-    router.push(loginHref(path + search + hash));
-  };
-  return { href, onClick };
-}
-
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { user, loading } = useAuth();
+  const { user, loading, openLogin } = useAuth();
   const pathname = usePathname();
-  const loginLink = useLoginLink();
   const onLoginPage = pathname === loginPath;
   const showLogin = !loading && !user && !onLoginPage;
 
@@ -79,13 +65,13 @@ export function SiteHeader() {
             </div>
           )}
           {showLogin && (
-            <Link
-              href={loginLink.href}
-              onClick={loginLink.onClick}
+            <button
+              type="button"
+              onClick={() => openLogin()}
               className="button button-dark hidden sm:inline-flex"
             >
               Přihlásit se
-            </Link>
+            </button>
           )}
           <button
             type="button"
@@ -157,16 +143,16 @@ export function SiteHeader() {
           </button>
         )}
         {showLogin && (
-          <Link
-            href={loginLink.href}
-            onClick={(event) => {
+          <button
+            type="button"
+            onClick={() => {
               setOpen(false);
-              loginLink.onClick(event);
+              openLogin();
             }}
             className="button button-dark mt-3 w-full sm:hidden"
           >
             Přihlásit se
-          </Link>
+          </button>
         )}
       </nav>
     </header>

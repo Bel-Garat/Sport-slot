@@ -25,13 +25,6 @@ export const roleLabels: Record<Role, string> = {
   ADMIN: "Administrátor",
 };
 
-export function loginHref(returnTo?: string): string {
-  if (!returnTo || returnTo === "/" || returnTo.startsWith(loginPath)) {
-    return loginPath;
-  }
-  return `${loginPath}?next=${encodeURIComponent(returnTo)}`;
-}
-
 export function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   const letters = parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : (parts[0] ?? "?").slice(0, 2);
@@ -58,6 +51,10 @@ type AuthState = {
   loading: boolean;
   setUser: (user: CurrentUser | null) => void;
   signIn: (signIn: GoogleSignIn) => void;
+  loginOpen: boolean;
+  loginReason: string | null;
+  openLogin: (reason?: string) => void;
+  closeLogin: () => void;
 };
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -68,6 +65,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: true,
   });
   const userSetManually = useRef(false);
+  const [login, setLogin] = useState<{ open: boolean; reason: string | null }>({
+    open: false,
+    reason: null,
+  });
+
+  const openLogin = useCallback((reason?: string) => {
+    setLogin({ open: true, reason: reason ?? null });
+  }, []);
+
+  const closeLogin = useCallback(() => {
+    setLogin((current) => ({ ...current, open: false }));
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -97,7 +106,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <AuthContext.Provider value={{ ...state, setUser, signIn }}>
+    <AuthContext.Provider
+      value={{
+        ...state,
+        setUser,
+        signIn,
+        loginOpen: login.open,
+        loginReason: login.reason,
+        openLogin,
+        closeLogin,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

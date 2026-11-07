@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { LoginDialog } from "@/components/LoginDialog";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || process.env.URL || "http://localhost:3000";
@@ -43,6 +44,7 @@ export default function RootLayout({
           <SiteHeader />
           <div className="flex-1">{children}</div>
           <SiteFooter />
+          <LoginDialog />
         </AuthProvider>
       </body>
     </html>

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function NewVenuePage() {
   return (
-    <RequireRole roles={["MANAGER"]}>
+    <RequireRole roles={["MANAGER"]} reason="Sportoviště může založit jen přihlášený správce. Po přihlášení budete pokračovat tady.">
       <main id="main-content" className="mx-auto max-w-3xl px-4 py-12">
         <p className="font-semibold text-muted">Pro správce</p>
         <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">

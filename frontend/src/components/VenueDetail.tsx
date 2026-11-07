@@ -152,7 +152,7 @@ function VenueContent({ venue }: { venue: Venue }) {
       <header className="relative mt-6 overflow-hidden rounded-3xl">
         <div className="relative aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/8]">
           <Image
-            src={imageForSports(sports)}
+            src={venue.imageUrl ?? imageForSports(sports)}
             alt=""
             fill
             priority

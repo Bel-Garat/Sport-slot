@@ -68,6 +68,7 @@ export async function listVenues(venueDao, req) {
 			id: venue.id,
 			name: venue.name,
 			city: venue.city,
+			imageUrl: venue.imageUrl ?? null,
 			sports: [...new Set(venue.courts.flatMap(sportsOf))],
 		}))
 		.filter((venue) => !city || normalize(venue.city) === city)
@@ -98,6 +99,7 @@ export async function getVenue(venueDao, req) {
 		address,
 		city,
 		description,
+		imageUrl: venue.imageUrl ?? null,
 		openingHours,
 		courts,
 		uuAppErrorMap: unsupportedKeys(req, dtoIn, ['id']),

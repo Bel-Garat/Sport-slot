@@ -256,6 +256,7 @@ paths:
                         id: { type: string, format: uuid }
                         name: { type: string }
                         city: { type: string }
+                        imageUrl: { type: string, nullable: true, example: /images/venues/padel.webp }
                         sports: { type: array, items: { type: string } }
                   pageInfo: { $ref: '#/components/schemas/PageInfo' }
                   uuAppErrorMap: { $ref: '#/components/schemas/UuAppErrorMap' }
@@ -284,6 +285,7 @@ paths:
                   address: { type: string }
                   city: { type: string }
                   description: { type: string, nullable: true }
+                  imageUrl: { type: string, nullable: true, example: /images/venues/padel.webp }
                   openingHours:
                     type: array
                     items: { $ref: '#/components/schemas/OpeningHours' }

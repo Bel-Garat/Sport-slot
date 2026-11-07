@@ -297,7 +297,7 @@ function VenueCard({
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-surface">
         <Image
-          src={imageForSports(venue.sports)}
+          src={venue.imageUrl ?? imageForSports(venue.sports)}
           alt=""
           fill
           priority={priority}

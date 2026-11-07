@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "seed": "prisma db execute --file prisma/seed.sql"
+    "seed": "prisma db execute --file prisma/seed.sql",
+    "generate": "prisma generate --config prisma7.config.ts"
   },
   "devDependencies": {
     "dotenv": "^18.0.9",

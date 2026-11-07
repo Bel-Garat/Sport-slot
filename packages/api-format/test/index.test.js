@@ -99,3 +99,22 @@ test('unknown command is 404 unknownCommand, also behind the /api prefix', async
 	assert.equal(response.status, 404)
 	assert.ok(response.body.uuAppErrorMap['foo/bar/unknownCommand'])
 })
+
+test('commands inside a mounted router keep their full name', async () => {
+	const app = express()
+	const router = express.Router()
+	router.get('/list', (req, res) => {
+		res.json({ uuAppErrorMap: unsupportedKeys(req, req.query, []) })
+	})
+	router.get('/get', () => {
+		throw notAuthorized()
+	})
+	app.use('/court', router)
+	app.use(errorHandler)
+
+	const warning = await request(app).get('/court/list?foo=1')
+	assert.ok(warning.body.uuAppErrorMap['court/list/unsupportedKeys'])
+
+	const error = await request(app).get('/court/get')
+	assert.ok(error.body.uuAppErrorMap['court/get/notAuthorized'])
+})

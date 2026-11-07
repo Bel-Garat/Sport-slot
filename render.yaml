@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: sportslot-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: npm ci
+    startCommand: node scripts/start-backend.mjs
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GATEWAY_SECRET
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        value: 761406248105-u0v6ac0fif8gj3njrp43l4thteicpqkv.apps.googleusercontent.com
+      - key: FRONTEND_ORIGIN
+        value: https://sport-slot.netlify.app

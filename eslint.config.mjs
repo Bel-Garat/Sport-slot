@@ -5,7 +5,7 @@ export default [
 	{ ignores: ['**/node_modules/**', 'frontend/**'] },
 	js.configs.recommended,
 	{
-		files: ['gateway/**/*.js', 'services/**/*.js', 'packages/**/*.js'],
+		files: ['gateway/**/*.js', 'services/**/*.js', 'packages/**/*.js', 'scripts/**/*.mjs'],
 		languageOptions: {
 			ecmaVersion: 2024,
 			sourceType: 'module',

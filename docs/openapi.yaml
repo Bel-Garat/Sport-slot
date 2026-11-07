@@ -2,10 +2,117 @@ openapi: 3.0.0
 info:
   title: SportSlot API Gateway
   version: 1.0.0
-  description: API dokumentace pro aplikaci SportSlot
+  description: |
+    API dokumentace pro aplikaci SportSlot. Všechny endpointy jdou přes gateway pod prefixem `/api`.
+    Formát odpovědí a chyb (`uuAppErrorMap`) popisuje `docs/api.md`, kapitola 0.
+    Chráněné endpointy vyžadují JWT aplikace z `POST /api/auth/googleCallback` v hlavičce `Authorization: Bearer <token>`.
+servers:
+  - url: /
+tags:
+  - name: Gateway
+  - name: Auth
+  - name: Venue
+  - name: Court
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    PageIndex:
+      name: pageIndex
+      in: query
+      schema: { type: integer, minimum: 0, default: 0 }
+    PageSize:
+      name: pageSize
+      in: query
+      schema: { type: integer, minimum: 1, default: 20 }
+  schemas:
+    UuAppErrorMap:
+      type: object
+      description: Klíč je `{command}/{kódChyby}`, bez varování prázdný objekt.
+      additionalProperties:
+        type: object
+        properties:
+          type: { type: string, enum: [error, warning] }
+          message: { type: string }
+          paramMap: { type: object }
+      example: {}
+    ErrorResponse:
+      type: object
+      properties:
+        uuAppErrorMap: { $ref: '#/components/schemas/UuAppErrorMap' }
+      example:
+        uuAppErrorMap:
+          venue/get/venueDoesNotExist:
+            type: error
+            message: Sportoviště nenalezeno.
+            paramMap: { id: 00000000-0000-4000-8000-000000000999 }
+    PageInfo:
+      type: object
+      properties:
+        pageIndex: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+    Role:
+      type: string
+      enum: [PLAYER, MANAGER, ADMIN]
+    User:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string }
+        name: { type: string }
+        roles:
+          type: array
+          items: { $ref: '#/components/schemas/Role' }
+    OpeningHours:
+      type: object
+      required: [dayOfWeek, openTime, closeTime]
+      properties:
+        dayOfWeek: { type: integer, minimum: 1, maximum: 7, description: '1 = pondělí, 7 = neděle' }
+        openTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$', example: '08:00' }
+        closeTime: { type: string, pattern: '^([01]\d|2[0-3]):[0-5]\d$', example: '22:00' }
+    Court:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        venueId: { type: string, format: uuid }
+        name: { type: string, example: Kurt 1 }
+        sport: { type: string, example: tenis }
+        surface: { type: string, example: antuka }
+        indoor: { type: boolean }
+  responses:
+    InvalidDtoIn:
+      description: Vstupní data nejsou platná (`invalidDtoIn`).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    NotAuthenticated:
+      description: Chybí nebo je neplatný JWT (`notAuthenticated`).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    NotAuthorized:
+      description: Uživatel nemá potřebnou roli nebo není vlastníkem (`notAuthorized`).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    NotFound:
+      description: Záznam neexistuje (`{entita}DoesNotExist`).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    Conflict:
+      description: Porušení jedinečnosti (`{entita}AlreadyExists`).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
 paths:
   /health:
     get:
+      tags: [Gateway]
       summary: Kontrola stavu gateway služby
       responses:
         '200':
@@ -18,3 +125,235 @@ paths:
                   status:
                     type: string
                     example: ok
+  /api/auth/googleCallback:
+    post:
+      tags: [Auth]
+      summary: Přihlášení přes Google
+      description: Ověří Google ID token, založí nebo aktualizuje uživatele a vrátí JWT aplikace (HS256, platnost 8 h).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [idToken]
+              properties:
+                idToken: { type: string, description: ID token (credential) z Google Identity Services }
+      responses:
+        '200':
+          description: Přihlášeno
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+                  uuAppErrorMap: { $ref: '#/components/schemas/UuAppErrorMap' }
+        '400': { $ref: '#/components/responses/InvalidDtoIn' }
+        '401':
+          description: Neplatný Google token (`invalidGoogleToken`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '503':
+          description: Přihlášení není nakonfigurované (`googleLoginUnavailable`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /api/user/me:
+    get:
+      tags: [Auth]
+      summary: Přihlášený uživatel
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Uživatel s aktuálními rolemi z databáze
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/User'
+                  - type: object
+                    properties:
+                      uuAppErrorMap: { $ref: '#/components/schemas/UuAppErrorMap' }
+        '401': { $ref: '#/components/responses/NotAuthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/venue/create:
+    post:
+      tags: [Venue]
+      summary: Založení sportoviště (BUC 1)
+      description: Jen pro roli MANAGER. Vlastníkem se stane přihlášený uživatel.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, address, city, openingHoursList]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 100, example: Sportcentrum Lužánky }
+                address: { type: string, minLength: 1, maxLength: 200, example: Lidická 1 }
+                city: { type: string, minLength: 1, maxLength: 100, example: Brno }
+                description: { type: string, maxLength: 2000 }
+                openingHoursList:
+                  type: array
+                  minItems: 1
+                  maxItems: 7
+                  description: Každý den nejvýše jednou, zavření po otevření.
+                  items: { $ref: '#/components/schemas/OpeningHours' }
+      responses:
+        '200':
+          description: Sportoviště založeno
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string, format: uuid }
+                  managerId: { type: string, format: uuid }
+                  name: { type: string }
+                  address: { type: string }
+                  city: { type: string }
+                  description: { type: string, nullable: true }
+                  createdAt: { type: string, format: date-time }
+                  openingHoursList:
+                    type: array
+                    items: { $ref: '#/components/schemas/OpeningHours' }
+                  uuAppErrorMap: { $ref: '#/components/schemas/UuAppErrorMap' }
+        '400': { $ref: '#/components/responses/InvalidDtoIn' }
+        '401': { $ref: '#/components/responses/NotAuthenticated' }
+        '403': { $ref: '#/components/responses/NotAuthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/venue/list:
+    get:
+      tags: [Venue]
+      summary: Vyhledání sportovišť (BUC 3)
+      description: Veřejné. Vrací jen sportoviště s alespoň jedním kurtem. Filtry ignorují velikost písmen a diakritiku.
+      parameters:
+        - { name: city, in: query, schema: { type: string }, example: praha }
+        - { name: sport, in: query, schema: { type: string }, example: tenis }
+        - $ref: '#/components/parameters/PageIndex'
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        '200':
+          description: Seznam sportovišť seřazený podle názvu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  itemList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string, format: uuid }
+                        name: { type: string }
+                        city: { type: string }
+                        sports: { type: array, items: { type: string } }
+                  pageInfo: { $ref: '#/components/schemas/PageInfo' }
+                  uuAppErrorMap: { $ref: '#/components/schemas/UuAppErrorMap' }
+        '400': { $ref: '#/components/responses/InvalidDtoIn' }
+  /api/venue/get:
+    get:
+      tags: [Venue]
+      summary: Detail sportoviště (BUC 3)
+      description: Veřejné.
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+          example: 00000000-0000-4000-8000-000000000101
+      responses:
+        '200':
+          description: Detail s otevírací dobou a kurty
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string, format: uuid }
+                  name: { type: string }
+                  address: { type: string }
+                  city: { type: string }
+                  description: { type: string, nullable: true }
+                  openingHours:
+                    type: array
+                    items: { $ref: '#/components/schemas/OpeningHours' }
+                  courts:
+                    type: array
+                    items: { $ref: '#/components/schemas/Court' }
+                  uuAppErrorMap: { $ref: '#/components/schemas/UuAppErrorMap' }
+        '400': { $ref: '#/components/responses/InvalidDtoIn' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/court/create:
+    post:
+      tags: [Court]
+      summary: Přidání kurtu do sportoviště (BUC 2)
+      description: Jen pro roli MANAGER, který je vlastníkem sportoviště.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [venueId, name, sport, surface, indoor]
+              properties:
+                venueId: { type: string, format: uuid }
+                name: { type: string, minLength: 1, maxLength: 50, example: Kurt 1 }
+                sport: { type: string, minLength: 1, maxLength: 50, example: tenis }
+                surface: { type: string, minLength: 1, maxLength: 100, example: antuka }
+                indoor: { type: boolean }
+      responses:
+        '200':
+          description: Kurt přidán
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Court'
+                  - type: object
+                    properties:
+                      uuAppErrorMap: { $ref: '#/components/schemas/UuAppErrorMap' }
+        '400': { $ref: '#/components/responses/InvalidDtoIn' }
+        '401': { $ref: '#/components/responses/NotAuthenticated' }
+        '403': { $ref: '#/components/responses/NotAuthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/court/list:
+    get:
+      tags: [Court]
+      summary: Kurty sportoviště
+      description: Veřejné.
+      parameters:
+        - name: venueId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+          example: 00000000-0000-4000-8000-000000000101
+        - $ref: '#/components/parameters/PageIndex'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Kurty seřazené podle názvu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  itemList:
+                    type: array
+                    items: { $ref: '#/components/schemas/Court' }
+                  pageInfo: { $ref: '#/components/schemas/PageInfo' }
+                  uuAppErrorMap: { $ref: '#/components/schemas/UuAppErrorMap' }
+        '400': { $ref: '#/components/responses/InvalidDtoIn' }
+        '404': { $ref: '#/components/responses/NotFound' }

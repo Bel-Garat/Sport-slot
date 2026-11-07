@@ -4,8 +4,11 @@
 
 `venue-service` je backendová mikroslužba projektu SportSlot postavená na Node.js 22 a Express 5. Spravuje sportoviště, kurty a navazující data.
 
-Aktuální implementace zahrnuje dva endpointy:
+Aktuální implementace zahrnuje tyto endpointy (kontrakty v [docs/api.md](../../docs/api.md)):
 
+- `POST /venue/create` – založení sportoviště správcem včetně otevírací doby.
+- `GET /venue/list` – vyhledání sportovišť podle města a sportu.
+- `GET /venue/get` – detail sportoviště s otevírací dobou a kurty.
 - `GET /court/list` – získání kurtů daného sportoviště.
 - `POST /court/create` – vytvoření kurtu správcem sportoviště.
 

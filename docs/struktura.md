@@ -33,7 +33,7 @@ Gateway přijímá požadavky pod prefixem `/api/` a podle cesty je předává m
 
 | Cesta                                              | Cílová mikroslužba  |
 | -------------------------------------------------- | ------------------- |
-| `/api/auth/…`                                      | auth-service        |
+| `/api/auth/…`, `/api/user/…`                       | auth-service        |
 | `/api/venue/…`, `/api/court/…`, `/api/priceRule/…` | venue-service       |
 | `/api/reservation/…`                               | reservation-service |
 | `/api/review/…`                                    | review-service      |
@@ -41,7 +41,8 @@ Gateway přijímá požadavky pod prefixem `/api/` a podle cesty je předává m
 
 - Adresy mikroslužeb se konfigurují pomocí proměnných prostředí `*_SERVICE_URL`. Výchozí adresy jsou `http://localhost:4001` až `http://localhost:4005`.
 - Endpoint `GET /health` slouží ke kontrole dostupnosti gateway.
-- Ověřování přihlášení uživatele prostřednictvím auth-service zatím není implementováno. Jeho zapojení je plánováno v rámci dalšího vývoje.
+- Gateway ověřuje JWT z hlavičky `Authorization: Bearer …` (vydává ho auth-service po přihlášení přes Google). Veřejné endpointy (vyhledání a detail sportoviště, seznam kurtů, přihlášení) projdou i bez tokenu, zakládání sportoviště a kurtu vyžaduje roli `MANAGER`. Podrobnosti v [gateway/README.md](../gateway/README.md).
+- Dokumentace API ve Swagger UI je na `GET /api-docs` (zdroj `docs/openapi.yaml`).
 
 ## 4. Mikroslužby a vlastnictví dat
 
@@ -65,7 +66,7 @@ Běžný požadavek z frontendu prochází následujícími kroky:
 2. Gateway podle cesty vybere cílovou mikroslužbu, odstraní prefix `/api` a předá jí požadavek.
 3. Mikroslužba požadavek zpracuje nad svými daty a vrátí odpověď.
 
-Uvedený postup popisuje pouze směrování požadavků. Ověřování přihlášení uživatele zatím není implementováno.
+Před předáním gateway u chráněných endpointů ověří JWT a roli, odstraní hlavičky identity od klienta a doplní vlastní `x-user-id`, `x-user-roles` a `x-gateway-secret`. Služby věří identitě jen tehdy, když `x-gateway-secret` souhlasí s jejich `GATEWAY_SECRET`.
 
 Mikroslužby mohou komunikovat také přímo mezi sebou. Například `reservation-service` volá endpoint `priceRule/listByCourt` ve `venue-service`, aby získala cenová pravidla potřebná pro výpočet ceny rezervace.
 

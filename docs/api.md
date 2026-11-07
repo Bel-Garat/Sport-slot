@@ -74,9 +74,11 @@ Když `response.ok` je `false`, zobrazte `message` první položky v `uuAppError
 
 ### `POST venue/create`
 * **Popis:** Založení nového sportoviště (US 3, BUC 1).
-* **Práva:** Oprávnění Správce.
-* **Tělo požadavku (JSON):** `name`, `address`, `city`, `description`.
-* **Poznámka:** Založí se také záznamy do tabulky `OpeningHours` (den, od-do).
+* **Práva:** Správce (role `PLAYER` + `MANAGER`). Vlastníkem sportoviště se stane přihlášený uživatel.
+* **dtoIn (JSON):** `name` (1–100 znaků), `address` (1–200), `city` (1–100), `description?` (max. 2000), `openingHoursList: [{ dayOfWeek, openTime, closeTime }]` – 1 až 7 položek, každý den nejvýš jednou, `dayOfWeek` 1–7 (Po–Ne), časy `"HH:MM"`, zavření po otevření. Texty se ořezávají o mezery.
+* **dtoOut:** `id, managerId, name, address, city, description, createdAt, openingHoursList` (seřazené podle dne).
+* **Poznámka:** Sportoviště i otevírací doba se uloží v jednom zápisu. Ve vyhledávání se zobrazí až po přidání prvního kurtu.
+* **Chyby:** `venue/create/invalidDtoIn` (400, klíče položek např. `openingHoursList[0].closeTime`), `notAuthenticated` (401), `notAuthorized` (403), `venue/create/venueAlreadyExists` (409 – stejný název, adresa a město), varování `venue/create/unsupportedKeys`.
 
 ### `GET venue/list`
 * **Popis:** Vyhledání sportovišť podle sportu a města (US 6, BUC 3).
@@ -100,11 +102,16 @@ Hodnocení (průměr recenzí) zatím venue/list ani venue/get nevrací. Recenze
 ### `POST court/create`
 * **Popis:** Přidání nového kurtu pod existující sportoviště (US 4, BUC 2).
 * **Práva:** Správce (musí být vlastníkem sportoviště).
-* **Tělo požadavku (JSON):** `venueId`, `name`, `sport`, `surface`, `indoor` (boolean).
+* **dtoIn (JSON):** `venueId` (UUID), `name` (1–50 znaků), `sport` (1–50), `surface` (1–100), `indoor` (boolean).
+* **dtoOut:** `id, venueId, name, sport, surface, indoor`.
+* **Chyby:** `court/create/invalidDtoIn` (400), `notAuthenticated` (401), `notAuthorized` (403 – chybí role nebo cizí sportoviště), `court/create/venueDoesNotExist` (404), `court/create/courtAlreadyExists` (409 – název kurtu ve sportovišti už existuje).
 
 ### `GET court/list`
 * **Popis:** Získání seznamu všech kurtů daného sportoviště (US 5).
 * **Práva:** Návštěvník i Hráč.
+* **dtoIn (query):** `venueId` (UUID, povinné), `pageIndex?` (od 0), `pageSize?` (výchozí 20).
+* **dtoOut:** `itemList: [{ id, venueId, name, sport, surface, indoor }]` seřazené podle názvu, `pageInfo`.
+* **Chyby:** `court/list/invalidDtoIn` (400), `court/list/venueDoesNotExist` (404).
 
 ## 3. Ceníky a pravidla (PriceRule)
 
@@ -115,7 +122,7 @@ Hodnocení (průměr recenzí) zatím venue/list ani venue/get nevrací. Recenze
 
 ### `GET priceRule/listByCourt`
 **Popis:** Získání ceníku kurtu. Tento endpoint bude volat `reservation-service` pro výpočet výsledné ceny rezervace (US 7). 
-## 4. Auth – Google přihlášení (návrh API kontraktu)
+## 4. Auth – Google přihlášení
 
 ### POST /api/auth/googleCallback
 
@@ -144,14 +151,19 @@ Hodnocení (průměr recenzí) zatím venue/list ani venue/get nevrací. Recenze
 }
 ```
 
+**Ověření:** auth-service ověří podpis ID tokenu veřejnými klíči Google, vydavatele (`accounts.google.com`), audience (= `GOOGLE_CLIENT_ID`) a ověřený e-mail. Uživatele najde podle Google ID, nebo ho založí s rolí `PLAYER`.
+
+**JWT aplikace:** HS256 (`JWT_SECRET`), payload `{ userId, roles }`, platnost 8 hodin. Frontend ho posílá v hlavičce `Authorization: Bearer <token>`.
+
 **Možné chyby:**
-- 400 – invalidDtoIn
-- 401 – neplatný Google token
-- 500 – interní chyba serveru
+- 400 – `auth/googleCallback/invalidDtoIn`
+- 401 – `auth/googleCallback/invalidGoogleToken` (neplatný nebo cizí Google token)
+- 503 – `auth/googleCallback/googleLoginUnavailable` (chybí `GOOGLE_CLIENT_ID` nebo `JWT_SECRET`)
+- 500 – `unexpectedError`
 
 ---
 
-## 5. User – Informace o přihlášeném uživateli (návrh API kontraktu)
+## 5. User – Informace o přihlášeném uživateli
 
 
 ### GET /api/user/me
@@ -179,8 +191,9 @@ Authorization: Bearer <JWT_TOKEN>
 ```
 
 **Možné chyby:**
-- 401 – notAuthenticated
-- 404 – uživatel nebyl nalezen
-- 500 – interní chyba serveru
+- 401 – `user/me/notAuthenticated`
+- 404 – `user/me/userDoesNotExist`
+- 500 – `unexpectedError`
 
-**Poznámka:** Endpoint /api/user/me vyžaduje doplnění směrování v gateway a implementaci v backendové službě.
+Role se čtou z databáze, takže změna role (např. schválení správce) se projeví hned, bez nového přihlášení. JWT ale nese role z okamžiku přihlášení – oprávnění na gateway se změní až s novým tokenem.
+
